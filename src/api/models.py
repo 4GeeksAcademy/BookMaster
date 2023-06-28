@@ -17,3 +17,20 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+class Book(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    price = db.Column(db.Integer, unique=False, nullable=False)
+    description = db.Column(db.String(250), unique=True, nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.email,
+            "price": self.price,
+            "description":self.description
+            # do not serialize the password, its a security breach
+        }
+    
+
+    
