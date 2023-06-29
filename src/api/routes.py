@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Book
 from api.utils import generate_sitemap, APIException
 
 from flask_jwt_extended import create_access_token
@@ -81,3 +81,54 @@ def protected():
     # Access the identity of the current user with get_jwt_identity
     user_email = get_jwt_identity()
     return jsonify(logged_in_as=user_email), 200
+
+@api.route('/agregarlibro', methods=['POST'])
+def bookAdd():
+    name=request.json["name"] 
+    description = request.json["description"]  
+    price = request.json["price"]  
+     
+    libros = Book(name,description,price)
+    db.session.add(libros)
+    db.session.commit()
+    response_body = {
+        "msg": "Libro añadido"
+    }
+    return jsonify(response_body),200
+
+@api.route('/listalibros',methods =['GET'])
+def listBook():
+    all_books = Book.query.all()
+    # return jsonify(all_books)
+    response_body = {
+        "msg": "Libro añadido"
+    }
+    print(all_books)
+    return jsonify(response_body),200
+
+@api.route('/detalleslibros/<id>',methods =['GET'])
+def bookDetails(id):
+    book = Book.query.get(id)
+    return jsonify(book)
+ 
+@api.route('/actualizarlibro/<id>',methods = ['PUT'])
+def bookUpdate(id):
+    book = Book.query.get(id)
+ 
+    name = request.json['name']
+    description = request.json["description"]  
+    price = request.json["price"]
+ 
+    book.name = name
+    book.description = description
+    book.price = price
+
+    db.session.commit()
+    return jsonify(book)
+ 
+@api.route('/borrarlibro/<id>',methods=['DELETE'])
+def bookDelete(id):
+    book = Book.query.get(id)
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify(book)
