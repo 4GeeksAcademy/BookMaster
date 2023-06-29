@@ -79,47 +79,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 		},
 		borrarCarrito: (item) => {
 		  const store = getStore();
-		  const updatedCart = store.car.filter((product) => product !== item);
+		  const updatedCart = store.car.filter((el) => el.titulo !== item.titulo);
 		  setStore({ car: updatedCart });
 		},
 		borrarFavoritos: (item) => {
 		  const store = getStore();
-		  const updatedFavorites = store.favorite.filter(
-			(favorite) => favorite !== item
-		  );
+		  const updatedFavorites = store.favorite.filter((el) => el !== item);
 		  setStore({ favorite: updatedFavorites });
 		},
 		getMessage: async () => {
 		  try {
-			// fetching data from the backend
+			// Obtener datos desde el backend
 			const resp = await fetch(process.env.BACKEND_URL + "/api/hello");
 			const data = await resp.json();
-			setStore({ message: data.message });
-			// don't forget to return something, that is how the async resolves
-			return data;
+			// Hacer algo con los datos obtenidos
 		  } catch (error) {
-			console.log("Error loading message from backend", error);
+			console.log("Error al cargar el mensaje desde el backend", error);
 		  }
 		},
-		changeColor: (index, color) => {
-		  //get the store
-		  const store = getStore();
-  
-		  //we have to loop the entire libros array to look for the respective index
-		  //and change its color
-		  const libros = store.libros.map((libro, i) => {
-			if (i === index) {
-			  return {
-				...libro,
-				color: color,
-			  };
-			}
-			return libro;
-		  });
-  
-		  //reset the global store
-		  setStore({ libros: libros });
-		},
+		// ...otras funciones
 	  },
 	};
   };

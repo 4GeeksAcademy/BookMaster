@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
-import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
-import rigoImageUrl from "../../img/rigo-baby.jpg";
+import { Context } from "../store/appContext";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
+
+  const rigoImageUrl = ""; // Añade la URL de la imagen de Rigo
 
   return (
     <nav className="navbar navbar-light bg-light mb-3">
