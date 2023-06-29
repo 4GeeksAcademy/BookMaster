@@ -16,39 +16,68 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			]
 		},
-		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.msg })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
+		añadirCarrito: (titulo, precio) => {
+		  const store = getStore();
+		  const isItemInCart = store.car.some((item) => item.titulo === titulo);
+  
+		  if (!isItemInCart) {
+			const newItem = {
+			  titulo: titulo,
+			  precio: precio,
+			  cantidad: 1,
+			};
+			const updatedCart = [...store.car, newItem];
+			setStore({ car: updatedCart });
+		  }
+		},
+		aumentarCantidad: (titulo) => {
+		  const store = getStore();
+		  const updatedCart = store.car.map((item) => {
+			if (item.titulo === titulo) {
+			  return {
+				...item,
+				cantidad: item.cantidad + 1,
+			  };
 			}
-		}
+			return item;
+		  });
+		  setStore({ car: updatedCart });
+		},
+		disminuirCantidad: (titulo) => {
+		  const store = getStore();
+		  const updatedCart = store.car.map((item) => {
+			if (item.titulo === titulo && item.cantidad > 1) {
+			  return {
+				...item,
+				cantidad: item.cantidad - 1,
+			  };
+			}
+			return item;
+		  });
+		  setStore({ car: updatedCart });
+		},
+		borrarCarrito: (item) => {
+		  const store = getStore();
+		  const updatedCart = store.car.filter((el) => el.titulo !== item.titulo);
+		  setStore({ car: updatedCart });
+		},
+		borrarFavoritos: (item) => {
+		  const store = getStore();
+		  const updatedFavorites = store.favorite.filter((el) => el !== item);
+		  setStore({ favorite: updatedFavorites });
+		},
+		getMessage: async () => {
+		  try {
+			// Obtener datos desde el backend
+			const resp = await fetch(process.env.BACKEND_URL + "/api/hello");
+			const data = await resp.json();
+			// Hacer algo con los datos obtenidos
+		  } catch (error) {
+			console.log("Error al cargar el mensaje desde el backend", error);
+		  }
+		},
+		// ...otras funciones
+	  },
 	};
 };
 
