@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Libro
 from api.utils import generate_sitemap, APIException
 
 from flask_jwt_extended import create_access_token
@@ -17,9 +17,8 @@ api = Blueprint('api', __name__)
 def handle_hello():
 
     response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
+        "msg": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
     }
-
 
     return jsonify(response_body), 200
 
@@ -60,7 +59,7 @@ def handle_login():
             "msg": "User does not exist. Check your credentials again or signup!"
         }
         return jsonify(response), 401
-
+    
     # check if the password is correct
     if user.password == auth.get("password"):
         #create token with jwt
@@ -82,3 +81,55 @@ def protected():
     # Access the identity of the current user with get_jwt_identity
     user_email = get_jwt_identity()
     return jsonify(logged_in_as=user_email), 200
+
+@api.route('/libros', methods=['GET'])
+def get_libros():
+    libros = Libro.query.all()
+    serialized_libros = [libro.serialize() for libro in libros]
+    return jsonify(serialized_libros), 200
+
+@api.route('/libros', methods=['POST'])
+def create_libro():
+    titulo = request.json.get('titulo')
+    autor = request.json.get('autor')
+    categoria = request.json.get('categoria')
+    detalle = request.json.get('detalle')
+    precio = request.json.get('precio')
+
+    libro = Libro(titulo=titulo, autor=autor, categoria=categoria, detalle=detalle, precio=precio)
+    db.session.add(libro)
+    db.session.commit()
+
+    return jsonify(libro.serialize()), 201
+
+@api.route('/libros/<int:libro_id>', methods=['GET'])
+def get_libro(libro_id):
+    libro = Libro.query.get(libro_id)
+    if libro:
+        return jsonify(libro.serialize()), 200
+    else:
+        return jsonify({'message': 'Libro not found'}), 404
+
+@api.route('/libros/<int:libro_id>', methods=['PUT'])
+def update_libro(libro_id):
+    libro = Libro.query.get(libro_id)
+    if libro:
+        libro.titulo = request.json.get('titulo')
+        libro.autor = request.json.get('autor')
+        libro.categoria = request.json.get('categoria')
+        libro.detalle = request.json.get('detalle')
+        libro.precio = request.json.get('precio')
+        db.session.commit()
+        return jsonify(libro.serialize()), 200
+    else:
+        return jsonify({'message': 'Libro not found'}), 404
+
+@api.route('/libros/<int:libro_id>', methods=['DELETE'])
+def delete_libro(libro_id):
+    libro = Libro.query.get(libro_id)
+    if libro:
+        db.session.delete(libro)
+        db.session.commit()
+        return jsonify({'message': 'Libro deleted'}), 200
+    else:
+        return jsonify({'message': 'Libro not found'}), 404
