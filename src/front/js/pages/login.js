@@ -45,7 +45,6 @@ export const Login = () => {
         window.sessionStorage.setItem("token", jsonResp.token);
         navigate("/private");
     }
-
   }
 
   return (

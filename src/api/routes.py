@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Book
+from api.models import db, User, Libro
 from api.utils import generate_sitemap, APIException
 
 from flask_jwt_extended import create_access_token
@@ -82,53 +82,54 @@ def protected():
     user_email = get_jwt_identity()
     return jsonify(logged_in_as=user_email), 200
 
-@api.route('/agregarlibro', methods=['POST'])
-def bookAdd():
-    name=request.json["name"] 
-    description = request.json["description"]  
-    price = request.json["price"]  
-     
-    libros = Book(name,description,price)
-    db.session.add(libros)
-    db.session.commit()
-    response_body = {
-        "msg": "Libro añadido"
-    }
-    return jsonify(response_body),200
+@api.route('/libros', methods=['GET'])
+def get_libros():
+    libros = Libro.query.all()
+    serialized_libros = [libro.serialize() for libro in libros]
+    return jsonify(serialized_libros), 200
 
-@api.route('/listalibros',methods =['GET'])
-def listBook():
-    all_books = Book.query.all()
-    # return jsonify(all_books)
-    response_body = {
-        "msg": "Libro añadido"
-    }
-    print(all_books)
-    return jsonify(response_body),200
+@api.route('/libros', methods=['POST'])
+def create_libro():
+    titulo = request.json.get('titulo')
+    autor = request.json.get('autor')
+    categoria = request.json.get('categoria')
+    detalle = request.json.get('detalle')
+    precio = request.json.get('precio')
 
-@api.route('/detalleslibros/<id>',methods =['GET'])
-def bookDetails(id):
-    book = Book.query.get(id)
-    return jsonify(book)
- 
-@api.route('/actualizarlibro/<id>',methods = ['PUT'])
-def bookUpdate(id):
-    book = Book.query.get(id)
- 
-    name = request.json['name']
-    description = request.json["description"]  
-    price = request.json["price"]
- 
-    book.name = name
-    book.description = description
-    book.price = price
+    libro = Libro(titulo=titulo, autor=autor, categoria=categoria, detalle=detalle, precio=precio)
+    db.session.add(libro)
+    db.session.commit()
 
-    db.session.commit()
-    return jsonify(book)
- 
-@api.route('/borrarlibro/<id>',methods=['DELETE'])
-def bookDelete(id):
-    book = Book.query.get(id)
-    db.session.delete(book)
-    db.session.commit()
-    return jsonify(book)
+    return jsonify(libro.serialize()), 201
+
+@api.route('/libros/<int:libro_id>', methods=['GET'])
+def get_libro(libro_id):
+    libro = Libro.query.get(libro_id)
+    if libro:
+        return jsonify(libro.serialize()), 200
+    else:
+        return jsonify({'message': 'Libro not found'}), 404
+
+@api.route('/libros/<int:libro_id>', methods=['PUT'])
+def update_libro(libro_id):
+    libro = Libro.query.get(libro_id)
+    if libro:
+        libro.titulo = request.json.get('titulo')
+        libro.autor = request.json.get('autor')
+        libro.categoria = request.json.get('categoria')
+        libro.detalle = request.json.get('detalle')
+        libro.precio = request.json.get('precio')
+        db.session.commit()
+        return jsonify(libro.serialize()), 200
+    else:
+        return jsonify({'message': 'Libro not found'}), 404
+
+@api.route('/libros/<int:libro_id>', methods=['DELETE'])
+def delete_libro(libro_id):
+    libro = Libro.query.get(libro_id)
+    if libro:
+        db.session.delete(libro)
+        db.session.commit()
+        return jsonify({'message': 'Libro deleted'}), 200
+    else:
+        return jsonify({'message': 'Libro not found'}), 404

@@ -1,0 +1,15 @@
+input{
+    border: 1px solid;
+    border-radius: 5px;
+}
+label{
+    padding: 5px;
+}
+li{
+    border:3px solid;
+    font-size: 20px;
+    margin: 8px;
+}
+ul.btn-btn-primary{
+    margin-bottom: 5px;
+}
