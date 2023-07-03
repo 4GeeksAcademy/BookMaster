@@ -37,20 +37,43 @@ const getState = ({ getStore, getActions, setStore }) => {
 			setStore({ favorite: updatedFavorites });
 		  }
 		},
-		añadirCarrito: (titulo, precio) => {
-		  const store = getStore();
-		  const isItemInCart = store.car.some((item) => item.titulo === titulo);
-  
-		  if (!isItemInCart) {
-			const newItem = {
-			  titulo: titulo,
-			  precio: precio,
-			  cantidad: 1,
-			};
-			const updatedCart = [...store.car, newItem];
-			setStore({ car: updatedCart });
-		  }
-		},
+		añadirCarrito: async (titulo, precio) => {
+			const store = getStore();
+			const isItemInCart = store.car.some((item) => item.titulo === titulo);
+		  
+			if (!isItemInCart) {
+			  const newItem = {
+				titulo: titulo,
+				precio: precio,
+				cantidad: 1,
+			  };
+			  const updatedCart = [...store.car, newItem];
+			  setStore({ car: updatedCart });
+		  
+			  try {
+				const response = await fetch(process.env.BACKEND_URL + "/api/cart", {
+				  method: "POST",
+				  headers: {
+					"Content-Type": "application/json",
+				  },
+				  body: JSON.stringify({
+					libro_id: newItem.id, // Reemplaza "id" con el ID real del libro en la base de datos
+					user_id: user_id, // Reemplaza "user_id" con el ID real del usuario actual
+					quantity: newItem.cantidad,
+				  }),
+				});
+		  
+				if (response.ok) {
+				  // El elemento se agregó correctamente al carrito de compras en la base de datos
+				} else {
+				  console.log("Error al agregar el elemento al carrito de compras en la base de datos");
+				}
+			  } catch (error) {
+				console.log("Error al realizar la solicitud POST al agregar el elemento al carrito de compras", error);
+			  }
+			}
+		  },
+		  
 		aumentarCantidad: (titulo) => {
 		  const store = getStore();
 		  const updatedCart = store.car.map((item) => {
