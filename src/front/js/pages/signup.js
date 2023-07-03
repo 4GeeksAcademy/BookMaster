@@ -23,7 +23,7 @@ export const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const signupUrl = store.apiUrl + "signup"
+    const signupUrl = "https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/signup"
 
     const requestNewUser = {
         method: "POST",
