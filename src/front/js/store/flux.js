@@ -8,6 +8,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			categoria: "Categoría 1",
 			detalle: "Detalles del libro 1",
 			precio: 9.99,
+			stock:13
 		  },
 		  {
 			titulo: "Libro 2",
@@ -15,6 +16,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			categoria: "Categoría 2",
 			detalle: "Detalles del libro 2",
 			precio: 14.99,
+			stock:13
 		  },
 		  {
 			titulo: "Libro 3",
@@ -22,8 +24,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 			categoria: "Categoría 3",
 			detalle: "Detalles del libro 3",
 			precio: 19.99,
+			stock:13
 		  },
 		],
+		usuarios:[],
 		car: [],
 		favorite: [],
 	  },
@@ -97,6 +101,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 			console.log("Error al cargar el mensaje desde el backend", error);
 		  }
 		},
+		getUsuarios: async () => {
+			try {
+			  const response = await fetch('https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/usuarios');
+			  if (response.ok) {
+				const data = await response.json();
+				// Actualizar el estado con los usuarios obtenidos
+				setStore({ usuarios: data });
+			  }
+			} catch (error) {
+			  console.log('Error al obtener los usuarios', error);
+			}
+		  },
 		getLibros: async () => {
 			try {
 			  const response = await fetch('https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/libros');
