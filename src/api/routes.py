@@ -6,20 +6,36 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
+<<<<<<< HEAD
 
 from .models import db, User, Libro, CartItem
 from .utils import generate_sitemap, APIException
+=======
+from flask_jwt_extended import JWTManager
+>>>>>>> origin/Develop
 
 api = Blueprint('api', __name__)
+api.config = {}
 
+# Configuración de la API
+api.config['JWT_SECRET_KEY'] = 'clave-secreta'  # Cambia esto por una clave secreta más segura
+jwt = JWTManager(api)
+
+<<<<<<< HEAD
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
+=======
 
-    response_body = {
-        "msg": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
+>>>>>>> origin/Develop
 
-    return jsonify(response_body), 200
+# Decorador personalizado para verificar el rol de administrador
+@api.route('/usuarios', methods=['GET'])
+def get_usuarios():
+    usuarios = User.query.all()
+    serialized_usuarios = [usuario.serialize() for usuario in usuarios]
+    return jsonify(serialized_usuarios), 200
+
+
 
 
 @api.route('/signup', methods=['POST'])
@@ -30,8 +46,7 @@ def handle_signup():
 
     user.email = request_user["email"]
     user.password = request_user["password"]
-    user.is_active = True
-
+   
     db.session.add(user)
     db.session.commit()
 
@@ -84,6 +99,11 @@ def protected():
     user_email = get_jwt_identity()
     return jsonify(logged_in_as=user_email), 200
 
+<<<<<<< HEAD
+=======
+# Ruta protegida que requiere autenticación y permiso de administrador
+
+>>>>>>> origin/Develop
 
 @api.route('/libros', methods=['GET'])
 def get_libros():
@@ -94,14 +114,20 @@ def get_libros():
 
 @api.route('/libros', methods=['POST'])
 def create_libro():
+    imagen = request.files.get('imagen')
     titulo = request.json.get('titulo')
     autor = request.json.get('autor')
     categoria = request.json.get('categoria')
     detalle = request.json.get('detalle')
     precio = request.json.get('precio')
+<<<<<<< HEAD
 
     libro = Libro(titulo=titulo, autor=autor, categoria=categoria,
                   detalle=detalle, precio=precio)
+=======
+    stock = request.json.get('stock')
+    libro = Libro(imagen=imagen,titulo=titulo, autor=autor, categoria=categoria, detalle=detalle, precio=precio, stock=stock)
+>>>>>>> origin/Develop
     db.session.add(libro)
     db.session.commit()
 
@@ -126,6 +152,7 @@ def update_libro(libro_id):
         libro.categoria = request.json.get('categoria')
         libro.detalle = request.json.get('detalle')
         libro.precio = request.json.get('precio')
+        libro.stock = request.json.get('stock')
         db.session.commit()
         return jsonify(libro.serialize()), 200
     else:

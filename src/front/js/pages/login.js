@@ -22,7 +22,7 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const loginUrl = store.apiUrl + "login"
+    const loginUrl = "https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/login"
 
     const requestUser = {
         method: "POST",
@@ -38,13 +38,14 @@ export const Login = () => {
 
     const jsonResp = await resp.json()
     if ([400, 401, 402, 403].includes(resp.status)) return window.alert(jsonResp.msg);
-
+    
     console.log("response: ", jsonResp)
 
     if (resp.status == 201) {
         window.sessionStorage.setItem("token", jsonResp.token);
         navigate("/private");
     }
+
   }
 
   return (
@@ -58,7 +59,7 @@ export const Login = () => {
                                 <div className="card-body p-md-5 mx-md-4">
 
                                     <div className="text-center">
-
+                                        
                                         <h4 className="mt-1 mb-5 pb-1">Login</h4>
                                     </div>
 
