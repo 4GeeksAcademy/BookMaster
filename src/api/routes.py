@@ -4,13 +4,14 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Libro
 from api.utils import generate_sitemap, APIException
-
+from flask_cors import CORS
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 
 api = Blueprint('api', __name__)
+CORS(api, origins='https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3000.preview.app.github.dev/') 
 api.config = {}
 
 # Configuración de la API
@@ -20,6 +21,17 @@ jwt = JWTManager(api)
 
 
 # Decorador personalizado para verificar el rol de administrador
+
+@api.route('/usuarios/roles/<int:user_id>', methods=['GET'])
+def get_user_roles(user_id):
+    user = User.query.get(user_id)
+    if user:
+        roles = user.role  # Suponiendo que tienes una relación "roles" en tu modelo User
+        serialized_roles = [role.serialize() for role in roles]
+        return jsonify(serialized_roles), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
+    
 @api.route('/usuarios', methods=['GET'])
 def get_usuarios():
     usuarios = User.query.all()
@@ -87,7 +99,6 @@ def protected():
     user_email = get_jwt_identity()
     return jsonify(logged_in_as=user_email), 200
 
-# Ruta protegida que requiere autenticación y permiso de administrador
 
 
 @api.route('/libros', methods=['GET'])
@@ -143,3 +154,5 @@ def delete_libro(libro_id):
         return jsonify({'message': 'Libro deleted'}), 200
     else:
         return jsonify({'message': 'Libro not found'}), 404
+
+

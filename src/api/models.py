@@ -6,7 +6,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-    
+    role = db.Column(db.String(50), nullable=False, default='usuario')  # Utilizando un campo de texto para el rol
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -15,12 +15,16 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, it's a security breach
+            "role": self.role
+            # No serialices la contraseña, es un riesgo de seguridad
         }
+
+    def is_admin(self):
+        return self.role == 'admin'
 
 class Libro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    imagen = db.Column(db.String(255), nullable=True)
+    imagen = db.Column(db.String(255))
     titulo = db.Column(db.String(100), nullable=False)
     autor = db.Column(db.String(100), nullable=False)
     categoria = db.Column(db.String(100), nullable=False)
@@ -49,5 +53,5 @@ class Libro(db.Model):
             "detalle": self.detalle,
             "precio": self.precio,
             "stock": self.stock,
-            "imagen": self.imagen
+            
         }

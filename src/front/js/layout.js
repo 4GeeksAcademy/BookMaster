@@ -11,6 +11,7 @@ import { Login } from "./pages/login.js";
 import { Private } from "./pages/private.js";
 import {LibroCRUD } from "./pages/libroCrud.js";
 import {ForgotPassword } from "./pages/forgotPassword.js";
+import {AdminPage} from "./pages/adminPage.js";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 
@@ -32,6 +33,7 @@ const Layout = () => {
                         <Route element={<Signup />} path="/signup" />
                         <Route element={<Login />} path="/login" />
                         <Route element={<Private />} path="/private" />
+                        <Route element={<AdminPage />} path="/vista-admin" />
                         <Route element={<LibroCRUD />} path="/libros" />
                         <Route element={<ForgotPassword />} path="/forgot-password" />
                         <Route element={<h1>Not found!</h1>} />

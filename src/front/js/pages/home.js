@@ -7,10 +7,11 @@ export const Home = () => {
   const { store } = useContext(Context);
 
   return (
+    
     <div className="text-center mt-3">
+      
       <div className="pb-2">
-        <a className="btn btn-success m-2" href="/signup" role="button">Signup</a>
-        <a className="btn btn-primary m-2" href="/login" role="button">Login</a>
+        
       </div>
       <div className="alert alert-info">
         {store.message ||

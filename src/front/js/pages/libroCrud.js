@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Context } from "../store/appContext";
 import "../../styles/librosCrud.css";
+
 export function LibroCRUD() {
   const [libros, setLibros] = useState([]);
   const [imagen, setImagen] = useState('');
@@ -21,10 +22,27 @@ export function LibroCRUD() {
       .catch(error => console.log(error));
   }, []);
 
+  const uploadImage = async (e) => {
+    const files = e.target.files;
+    const data = new FormData();
+    data.append("file", files[0]);
+    data.append("upload_preset", "images");
+    const res = await fetch("https://api.cloudinary.com/v1_1/ddorbh9wo/image/upload", {
+      method: "POST",
+      body: data,
+    });
+    const file = await res.json();
+  
+    const imageUrl = file.secure_url; // Obtener la URL de la imagen desde file.secure_url
+  
+    setImagen(imageUrl); // Asignar la URL de la imagen al estado imagen
+    console.log(imageUrl);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const nuevoLibro = {
-      imagen,
+      imagen: imagen ? imagen : '', // Asegúrate de que imagen contenga la URL de la imagen seleccionada
       titulo,
       autor,
       categoria,
@@ -32,10 +50,11 @@ export function LibroCRUD() {
       precio,
       stock,
     };
-
+  
     if (editando) {
       // Editar un libro existente
-      actions.editLibro(libroEditando.id, nuevoLibro)
+      actions
+        .editLibro(libroEditando.id, nuevoLibro)
         .then(() => {
           // Actualizar la lista de libros después de editar uno
           actions.getLibros()
@@ -43,7 +62,7 @@ export function LibroCRUD() {
             .catch(error => console.log(error));
         })
         .catch(error => console.log(error));
-
+  
       // Limpiar los campos de edición y restablecer el estado
       setImagen('');
       setTitulo('');
@@ -56,7 +75,8 @@ export function LibroCRUD() {
       setLibroEditando(null);
     } else {
       // Crear un nuevo libro
-      actions.addLibro(nuevoLibro)
+      actions
+        .addLibro(nuevoLibro)
         .then(() => {
           // Actualizar la lista de libros después de crear uno nuevo
           actions.getLibros()
@@ -64,7 +84,7 @@ export function LibroCRUD() {
             .catch(error => console.log(error));
         })
         .catch(error => console.log(error));
-
+  
       // Limpiar los campos de entrada después de enviar el formulario
       setImagen('');
       setTitulo('');
@@ -76,20 +96,9 @@ export function LibroCRUD() {
     }
   };
 
-  const handleEdit = (libro) => {
-    setImagen(libro.imagen);
-    setTitulo(libro.titulo);
-    setAutor(libro.autor);
-    setCategoria(libro.categoria);
-    setDetalle(libro.detalle);
-    setPrecio(libro.precio);
-    setStock(libro.stock);
-    setEditando(true);
-    setLibroEditando(libro);
-  };
-
   const handleDelete = (id) => {
-    actions.deleteLibro(id)
+    actions
+      .deleteLibro(id)
       .then(() => {
         // Actualizar la lista de libros después de eliminar uno
         actions.getLibros()
@@ -105,13 +114,13 @@ export function LibroCRUD() {
 
       {/* Formulario para crear o editar un libro */}
       <form onSubmit={handleSubmit}>
-      <div>
-          <label>Imagen:</label>
-          <input type="file" value={imagen} onChange={(e) => setImagen(e.target.value)}/>
+        <div>
+          <label>Imagen: <img src={imagen} style={{ width: "100px" }} alt="Libro" /></label>
+          <input type="file" onChange={uploadImage} />
         </div>
         <div>
           <label>Título:</label>
-          <input type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)}/>
+          <input type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
         </div>
         <div>
           <label>Autor:</label>
@@ -127,11 +136,11 @@ export function LibroCRUD() {
         </div>
         <div>
           <label>Precio:</label>
-          <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)}/>
+          <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)} />
         </div>
         <div>
           <label>Stock:</label>
-          <input type="number" value={stock} onChange={(e) => setStock(parseInt(e.target.value))}/>
+          <input type="number" value={stock} onChange={(e) => setStock(parseInt(e.target.value))} />
         </div>
         <button className="btn btn-primary" type="submit">{editando ? 'Guardar Cambios' : 'Crear Libro'}</button>
       </form>
@@ -139,21 +148,22 @@ export function LibroCRUD() {
       {/* Lista de libros */}
       <h2>Lista de Libros</h2>
       <ul>
-          {store.libros && store.libros.map((libro,index) =>(
+        {store.libros &&
+          store.libros.map((libro, index) => (
             <li key={index}>
-              <p>Imagen: <strong>{libro.imagen}</strong></p>
+              {libro.imagen && <img src={libro.imagen} alt="Imagen del libro" />}
               <p>Título: <strong>{libro.titulo}</strong></p>
               <p>Autor: <strong>{libro.autor}</strong></p>
               <p>Categoría: <strong>{libro.categoria}</strong></p>
               <p>Detalles: <strong>{libro.detalle}</strong></p>
               <p>Precio: <strong>{libro.precio}</strong></p>
               <p>Stock: <strong>{libro.stock}</strong></p>
-              <button className="btn btn-primary"onClick={() => handleEdit(libro)}>Editar</button>
-              <button className="btn btn-danger"onClick={() => handleDelete(libro.id)}>Eliminar</button>
+              <button className="btn btn-primary" onClick={() => handleEdit(libro)}>Editar</button>
+              <button className="btn btn-danger" onClick={() => handleDelete(libro.id)}>Eliminar</button>
             </li>
-            ))
-          }
+         ))}
       </ul>
+
     </div>
   );
 }

@@ -3,6 +3,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 	  store: {
 		libros: [
 		  {
+			imagen: "",
 			titulo: "Libro 1",
 			autor: "Autor 1",
 			categoria: "Categoría 1",
@@ -11,6 +12,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			stock:13
 		  },
 		  {
+			imagen: "",
 			titulo: "Libro 2",
 			autor: "Autor 2",
 			categoria: "Categoría 2",
@@ -19,6 +21,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			stock:13
 		  },
 		  {
+			imagen: "",
 			titulo: "Libro 3",
 			autor: "Autor 3",
 			categoria: "Categoría 3",
@@ -32,6 +35,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 		favorite: [],
 	  },
 	  actions: {
+		setRoles: (roles) => {
+			setStore({ roles: roles });
+		  },
 		añadirFavoritos: (item) => {
 		  const store = getStore();
 		  const isItemInFavorites = store.favorite.includes(item);
@@ -103,7 +109,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		},
 		getUsuarios: async () => {
 			try {
-			  const response = await fetch('https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/usuarios');
+			  const response = await fetch(process.env.BACKEND_URL + "api/usuarios");
 			  if (response.ok) {
 				const data = await response.json();
 				// Actualizar el estado con los usuarios obtenidos
@@ -113,12 +119,19 @@ const getState = ({ getStore, getActions, setStore }) => {
 			  console.log('Error al obtener los usuarios', error);
 			}
 		  },
-		getLibros: async () => {
+		  getLibros: async () => {
 			try {
-			  const response = await fetch('https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/libros');
+			  const response = await fetch(process.env.BACKEND_URL + "api/libros");
 			  if (response.ok) {
 				const data = await response.json();
-				setStore({ libros: data });
+				// Actualizar la lista de libros y asignar la URL de la imagen a cada libro
+				const librosConImagen = data.map(libro => {
+				  return {
+					...libro,
+					imagen: process.env.BACKEND_URL + libro.imagen // Asegúrate de que la ruta de la imagen sea correcta
+				  };
+				});
+				setStore({ libros: librosConImagen });
 			  }
 			} catch (error) {
 			  console.log('Error al obtener los libros', error);
@@ -126,7 +139,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		  },
 		addLibro: async (libro) => {
 			try {
-			  const response = await fetch('https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/libros', {
+			  const response = await fetch(process.env.BACKEND_URL + "api/libros", {
 				method: 'POST',
 				headers: {
 				  'Content-Type': 'application/json',
@@ -146,7 +159,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		
 		  editLibro: async (id, libro) => {
 			try {
-			  const response = await fetch(`https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/libros/${id}`, {
+			  const response = await fetch(process.env.BACKEND_URL +`api/libros/${id}`, {
 				method: 'PUT',
 				headers: {
 				  'Content-Type': 'application/json',
@@ -166,7 +179,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		
 		  deleteLibro: async (id) => {
 			try {
-			  const response = await fetch(`https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/libros/${id}`, {
+			  const response = await fetch(process.env.BACKEND_URL +`api/libros/${id}`, {
 				method: 'DELETE',
 			  });
 			  if (response.ok) {

@@ -15,7 +15,7 @@ export const Private = () => {
     })
 
     const checkUser = async (token) => {
-        const checkApiUrl = "https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/private";
+        const checkApiUrl = process.env.BACKEND_URL + "api/private";
 
         const requestAuth = {
             method: "GET",
