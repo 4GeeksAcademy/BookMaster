@@ -5,7 +5,16 @@ import { Context } from "../store/appContext";
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
 
-  const rigoImageUrl = ""; // Añade la URL de la imagen de Rigo
+  const rigoImageUrl = ""; 
+
+  // Función para calcular el total de la compra
+  const calculateTotal = () => {
+    const total = store.car.reduce(
+      (accumulator, item) => accumulator + item.precio * item.cantidad,
+      0
+    );
+    return `$${total.toFixed(2)}`;
+  };
 
   return (
     <nav className="navbar navbar-light bg-light mb-3">
@@ -70,19 +79,6 @@ export const Navbar = () => {
                   <div className="col-3 text-end justify-content-end">
                     <button
                       className="border border-0"
-                      onClick={() => actions.disminuirCantidad(item.titulo)}
-                    >
-                      -
-                    </button>
-                    <span className="mx-2">{item.cantidad}</span>
-                    <button
-                      className="border border-0"
-                      onClick={() => actions.aumentarCantidad(item.titulo)}
-                    >
-                      +
-                    </button>
-                    <button
-                      className="border border-0"
                       onClick={() => actions.borrarCarrito(item)}
                     >
                       <i className="fa fa-solid fa-trash" />
@@ -106,14 +102,4 @@ export const Navbar = () => {
       </div>
     </nav>
   );
-};
-
-// Función para calcular el total de la compra
-const calculateTotal = () => {
-  const { store } = useContext(Context);
-  const total = store.car.reduce(
-    (accumulator, item) => accumulator + item.precio * item.cantidad,
-    0
-  );
-  return `$${total.toFixed(2)}`;
 };
