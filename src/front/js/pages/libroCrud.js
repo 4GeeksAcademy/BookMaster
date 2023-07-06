@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Context } from "../store/appContext";
 import "../../styles/librosCrud.css";
 
@@ -14,30 +14,6 @@ export function LibroCRUD() {
   const [editando, setEditando] = useState(false);
   const [libroEditando, setLibroEditando] = useState(null);
   const { store, actions } = useContext(Context);
-
-  useEffect(() => {
-    // Obtener todos los libros al cargar el componente
-    actions.getLibros()
-      .then(data => setLibros(data))
-      .catch(error => console.log(error));
-  }, []);
-
-  const uploadImage = async (e) => {
-    const files = e.target.files;
-    const data = new FormData();
-    data.append("file", files[0]);
-    data.append("upload_preset", "images");
-    const res = await fetch("https://api.cloudinary.com/v1_1/ddorbh9wo/image/upload", {
-      method: "POST",
-      body: data,
-    });
-    const file = await res.json();
-  
-    const imageUrl = file.secure_url; // Obtener la URL de la imagen desde file.secure_url
-  
-    setImagen(imageUrl); // Asignar la URL de la imagen al estado imagen
-    console.log(imageUrl);
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -115,8 +91,8 @@ export function LibroCRUD() {
       {/* Formulario para crear o editar un libro */}
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Imagen: <img src={imagen} style={{ width: "100px" }} alt="Libro" /></label>
-          <input type="file" onChange={uploadImage} />
+          <label>Imagen:</label>
+          <input type="file" value={imagen} onChange={(e) => setImagen(e.target.value)} />
         </div>
         <div>
           <label>Título:</label>

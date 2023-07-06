@@ -13,7 +13,6 @@ export const ForgotPassword = () => {
       setEmail('');
     } catch (error) {
       console.error('Error al enviar la solicitud de restablecimiento de contraseña:', error);
-      
     }
   };
 
@@ -32,4 +31,3 @@ export const ForgotPassword = () => {
     </div>
   );
 };
-

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link, useNavigate, useHref } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Context } from "../store/appContext";
 import "../../styles/index.css";
@@ -30,8 +30,8 @@ export const Login = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: inputVal.email,
-        password: inputVal.password,
-      }),
+        password: inputVal.password
+      })
     };
   
     const resp = await fetch(loginUrl, requestUser).catch(() => false);
@@ -109,7 +109,14 @@ export const Login = () => {
                         </a>
                       </div>
 
-                      
+                      <div className="d-flex align-items-center justify-content-center pb-4">
+                        <p className="mb-0 me-2">Don't have an account?</p>
+                        <Link to={"/signup"}>
+                          <span className="btn btn-outline-danger">
+                            Create new
+                          </span>
+                        </Link>
+                      </div>
                     </form>
                   </div>
                 </div>
