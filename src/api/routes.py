@@ -6,36 +6,31 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
-<<<<<<< HEAD
-
 from .models import db, User, Libro, CartItem
 from .utils import generate_sitemap, APIException
-=======
 from flask_jwt_extended import JWTManager
->>>>>>> origin/Develop
 
 api = Blueprint('api', __name__)
 api.config = {}
 
 # Configuración de la API
-api.config['JWT_SECRET_KEY'] = 'clave-secreta'  # Cambia esto por una clave secreta más segura
+# Cambia esto por una clave secreta más segura
+api.config['JWT_SECRET_KEY'] = 'clave-secreta'
 jwt = JWTManager(api)
 
-<<<<<<< HEAD
+
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
-=======
-
->>>>>>> origin/Develop
+    return jsonify({'message': 'Hola'}), 200
 
 # Decorador personalizado para verificar el rol de administrador
+
+
 @api.route('/usuarios', methods=['GET'])
 def get_usuarios():
     usuarios = User.query.all()
     serialized_usuarios = [usuario.serialize() for usuario in usuarios]
     return jsonify(serialized_usuarios), 200
-
-
 
 
 @api.route('/signup', methods=['POST'])
@@ -46,7 +41,7 @@ def handle_signup():
 
     user.email = request_user["email"]
     user.password = request_user["password"]
-   
+
     db.session.add(user)
     db.session.commit()
 
@@ -99,11 +94,8 @@ def protected():
     user_email = get_jwt_identity()
     return jsonify(logged_in_as=user_email), 200
 
-<<<<<<< HEAD
-=======
 # Ruta protegida que requiere autenticación y permiso de administrador
 
->>>>>>> origin/Develop
 
 @api.route('/libros', methods=['GET'])
 def get_libros():
@@ -120,62 +112,22 @@ def create_libro():
     categoria = request.json.get('categoria')
     detalle = request.json.get('detalle')
     precio = request.json.get('precio')
-<<<<<<< HEAD
-
-    libro = Libro(titulo=titulo, autor=autor, categoria=categoria,
-                  detalle=detalle, precio=precio)
-=======
     stock = request.json.get('stock')
-    libro = Libro(imagen=imagen,titulo=titulo, autor=autor, categoria=categoria, detalle=detalle, precio=precio, stock=stock)
->>>>>>> origin/Develop
+
+    libro = Libro(imagen=imagen, titulo=titulo, autor=autor,
+                  categoria=categoria, detalle=detalle, precio=precio, stock=stock)
+
     db.session.add(libro)
     db.session.commit()
 
     return jsonify(libro.serialize()), 201
 
-
-@api.route('/libros/<int:libro_id>', methods=['GET'])
-def get_libro(libro_id):
-    libro = Libro.query.get(libro_id)
-    if libro:
-        return jsonify(libro.serialize()), 200
-    else:
-        return jsonify({'message': 'Libro not found'}), 404
-
-
-@api.route('/libros/<int:libro_id>', methods=['PUT'])
-def update_libro(libro_id):
-    libro = Libro.query.get(libro_id)
-    if libro:
-        libro.titulo = request.json.get('titulo')
-        libro.autor = request.json.get('autor')
-        libro.categoria = request.json.get('categoria')
-        libro.detalle = request.json.get('detalle')
-        libro.precio = request.json.get('precio')
-        libro.stock = request.json.get('stock')
-        db.session.commit()
-        return jsonify(libro.serialize()), 200
-    else:
-        return jsonify({'message': 'Libro not found'}), 404
-
-
-@api.route('/libros/<int:libro_id>', methods=['DELETE'])
-def delete_libro(libro_id):
-    libro = Libro.query.get(libro_id)
-    if libro:
-        db.session.delete(libro)
-        db.session.commit()
-        return jsonify({'message': 'Libro deleted'}), 200
-    else:
-        return jsonify({'message': 'Libro not found'}), 404
-
 # carrito de compras
 
-
 @api.route('/cart', methods=['GET'])
-def get_cart():
+def get_cart_items():
     cart_items = CartItem.query.all()
-    serialized_cart_items = [item.serialize() for item in cart_items]
+    serialized_cart_items = [cart_item.serialize() for cart_item in cart_items]
     return jsonify(serialized_cart_items), 200
 
 
@@ -198,46 +150,28 @@ def create_cart():
         return jsonify({'message': 'Libro or User not found'}), 404
 
 
-@api.route('/cart/<int:cart_item_id>', methods=['PUT'])
-def update_cart(cart_item_id):
-    cart_item = CartItem.query.get(cart_item_id)
-    if cart_item:
-        cart_item.quantity = request.json.get('quantity')
-        db.session.commit()
-        return jsonify(cart_item.serialize()), 200
-    else:
-        return jsonify({'message': 'Cart item not found'}), 404
-
-
 @api.route('/cart/<int:cart_item_id>', methods=['DELETE'])
-def delete_cart(cart_item_id):
+def delete_cart_item(cart_item_id):
     cart_item = CartItem.query.get(cart_item_id)
+
     if cart_item:
         db.session.delete(cart_item)
         db.session.commit()
+
         return jsonify({'message': 'Cart item deleted'}), 200
     else:
         return jsonify({'message': 'Cart item not found'}), 404
 
 
-@api.errorhandler(APIException)
-def handle_invalid_usage(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
+@api.route('/cart/<int:cart_item_id>', methods=['PUT'])
+def update_cart_item(cart_item_id):
+    cart_item = CartItem.query.get(cart_item_id)
+    quantity = request.json.get('quantity')
 
+    if cart_item:
+        cart_item.quantity = quantity
+        db.session.commit()
 
-def create_app():
-    app = Flask(__name__)
-    app.url_map.strict_slashes = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
-
-    db.init_app(app)
-    with app.app_context():
-        db.create_all()
-
-    app.register_blueprint(api)
-
-    return app
+        return jsonify(cart_item.serialize()), 200
+    else:
+        return jsonify({'message': 'Cart item not found'}), 404

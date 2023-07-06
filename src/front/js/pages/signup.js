@@ -23,7 +23,7 @@ export const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const signupUrl = "https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api/signup"
+    const signupUrl = "https://stalinnarvaez-silver-space-enigma-qjvgj5x95gxh9wqx-3001.preview.app.github.dev/api/signup"
 
     const requestNewUser = {
         method: "POST",
