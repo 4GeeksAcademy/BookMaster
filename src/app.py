@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for, send_from_directory
+from flask import Flask, request, jsonify, url_for, send_from_directory, request
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -72,3 +72,37 @@ def serve_any_other_file(path):
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
     app.run(host='0.0.0.0', port=PORT, debug=True)
+
+@app.route('/direcciones', methods=['GET'])
+def obtener_direcciones():
+    # Lógica para obtener todas las direcciones de la base de datos
+    direcciones = [{'id': 1, 'direccion': '123 Calle Principal'}, {'id': 2, 'direccion': '456 Avenida Secundaria'}]
+    return jsonify(direcciones)
+
+@app.route('/direcciones', methods=['POST'])
+def crear_direccion():
+    nueva_direccion = request.get_json()
+    # Lógica para crear una nueva dirección en la base de datos
+    # ...
+    return jsonify(nueva_direccion), 201
+
+@app.route('/direcciones/<int:direccion_id>', methods=['GET'])
+def obtener_direccion(direccion_id):
+    # Lógica para obtener una dirección específica de la base de datos
+    direccion = {'id': direccion_id, 'direccion': '123 Calle Principal'}
+    return jsonify(direccion)
+
+@app.route('/direcciones/<int:direccion_id>', methods=['PUT'])
+def actualizar_direccion(direccion_id):
+    direccion_actualizada = request.get_json()
+    # Lógica para actualizar una dirección específica en la base de datos
+    return jsonify(direccion_actualizada)
+
+@app.route('/direcciones/<int:direccion_id>', methods=['DELETE'])
+def eliminar_direccion(direccion_id):
+    # Lógica para eliminar una dirección específica de la base de datos
+    # ...
+    return '', 204
+
+if __name__ == '__main__':
+    app.run()
