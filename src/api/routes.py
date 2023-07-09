@@ -2,7 +2,9 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from flask_sqlalchemy import SQLAlchemy
+from api.models import db, User, Libro,CartItem
+from api.utils import generate_sitemap, APIException
+from flask_cors import CORS
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -11,6 +13,7 @@ from .utils import generate_sitemap, APIException
 from flask_jwt_extended import JWTManager
 
 api = Blueprint('api', __name__)
+CORS(api, origins='https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3000.preview.app.github.dev/') 
 api.config = {}
 
 # Configuración de la API
@@ -25,7 +28,16 @@ def handle_hello():
 
 # Decorador personalizado para verificar el rol de administrador
 
-
+@api.route('/usuarios/roles/<int:user_id>', methods=['GET'])
+def get_user_roles(user_id):
+    user = User.query.get(user_id)
+    if user:
+        roles = user.role  # Suponiendo que tienes una relación "roles" en tu modelo User
+        serialized_roles = [role.serialize() for role in roles]
+        return jsonify(serialized_roles), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
+    
 @api.route('/usuarios', methods=['GET'])
 def get_usuarios():
     usuarios = User.query.all()
@@ -33,68 +45,53 @@ def get_usuarios():
     return jsonify(serialized_usuarios), 200
 
 
-@api.route('/signup', methods=['POST'])
-def handle_signup():
-    user = User()
+@api.route("/login", methods=["POST"])
+def login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
 
-    request_user = request.get_json()
+    user = User.query.filter_by(email=email).first()
 
-    user.email = request_user["email"]
-    user.password = request_user["password"]
-
-    db.session.add(user)
-    db.session.commit()
-
+    if user is None:
+        return jsonify({"msg": "Could not find user with email"}), 401
+  
+    access_token = create_access_token(identity=email)
     response_body = {
-        "msg": "User successfully signed up"
+        "access_token": access_token,
+        "user": user.serialize()  # Incluye el objeto de usuario en la respuesta
     }
+    return jsonify(response_body), 200
 
-    return jsonify(response_body), 201
+@api.route("/signup", methods=["POST"])
+def signup():
+    body = request.get_json()
 
+    user = User.query.filter_by(email=body["email"]).first()
 
-@api.route('/login', methods=['POST'])
-def handle_login():
-    auth = request.get_json()
-
-    # check if the request is well done and has the correct params
-    if not auth or not auth.get('email') or not auth.get('password'):
-        response = {
-            "msg": "Could not verify email or password. Verify your request"
+    if user is None:
+        user = User(email=body["email"], password=body["password"])
+        db.session.add(user)
+        db.session.commit()
+        response_body = {
+            "msg": "Usuario creado"
         }
-        return jsonify(response), 401
-
-    # check if the user exists in the DB
-    user = User.query.filter_by(email=auth.get("email")).first()
-    if not user:
-        response = {
-            "msg": "User does not exist. Check your credentials again or signup!"
-        }
-        return jsonify(response), 401
-
-    # check if the password is correct
-    if user.password == auth.get("password"):
-        # create token with jwt
-        access_token = create_access_token(identity=auth.get("email"))
-        response = {
-            "user": user.serialize(),
-            "token": access_token
-        }
-        return response, 201
+        return jsonify(response_body), 200
     else:
-        response = {
-            "msg": "Incorrect password"
-        }
-        return response, 403
+        return jsonify({"msg": "Ya se encuentra un usuario creado con ese correo"}), 401
 
 
-@api.route('/private', methods=['GET'])
+@api.route("/private", methods=["GET"])
 @jwt_required()
 def protected():
-    # Access the identity of the current user with get_jwt_identity
-    user_email = get_jwt_identity()
-    return jsonify(logged_in_as=user_email), 200
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(email=current_user).first()
 
-# Ruta protegida que requiere autenticación y permiso de administrador
+    response_body = {
+        "msg": "Usuario Logeado",
+        "user": user.serialize()  # Incluye el objeto de usuario en la respuesta
+    }
+
+    return jsonify(response_body), 200
 
 
 @api.route('/libros', methods=['GET'])
@@ -133,21 +130,27 @@ def get_cart_items():
 
 @api.route('/cart', methods=['POST'])
 def create_cart():
-    libro_id = request.json.get('libro_id')
-    user_id = request.json.get('user_id')
-    quantity = request.json.get('quantity')
+    try:
+        cart_items = request.get_json()  # Obtener los elementos del carrito del cuerpo de la solicitud
 
-    libro = Libro.query.get(libro_id)
-    user = User.query.get(user_id)
+        # Procesar los elementos del carrito y guardarlos en la base de datos
+        for item in cart_items:
+            libro_id = item.get('libro_id')
+            user_id = item.get('user_id')
+            quantity = item.get('cantidad')
 
-    if libro and user:
-        cart_item = CartItem(libro=libro, user=user, quantity=quantity)
-        db.session.add(cart_item)
+            libro = Libro.query.get(libro_id)
+            user = User.query.get(user_id)
+
+            if libro and user:
+                cart_item = CartItem(libro=libro, user=user, quantity=quantity)
+                db.session.add(cart_item)
+
         db.session.commit()
-
-        return jsonify(cart_item.serialize()), 201
-    else:
-        return jsonify({'message': 'Libro or User not found'}), 404
+        return jsonify({'message': 'Cart created successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Error creating cart', 'error': str(e)}), 500
 
 
 @api.route('/cart/<int:cart_item_id>', methods=['DELETE'])

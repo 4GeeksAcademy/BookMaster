@@ -6,8 +6,8 @@ db = SQLAlchemy()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    role = db.Column(db.String(50), nullable=False, default='usuario')  # Utilizando un campo de texto para el rol
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -16,13 +16,16 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, it's a security breach
+            "role": self.role
+            # No serialices la contraseña, es un riesgo de seguridad
         }
 
+    def is_admin(self):
+        return self.role == 'admin'
 
 class Libro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    imagen = db.Column(db.String(255), nullable=True)
+    imagen = db.Column(db.String(255), nullable=False)
     titulo = db.Column(db.String(100), nullable=False)
     autor = db.Column(db.String(100), nullable=False)
     categoria = db.Column(db.String(100), nullable=False)
@@ -47,11 +50,10 @@ class Libro(db.Model):
             "autor": self.autor,
             "categoria": self.categoria,
             "detalle": self.detalle,
-            "precio": self.precio
+            "precio": self.precio,
+            "stock": self.stock,
+            
         }
-
-# Carrito de compras
-
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     libro_id = db.Column(db.Integer, db.ForeignKey('libro.id'), nullable=False)

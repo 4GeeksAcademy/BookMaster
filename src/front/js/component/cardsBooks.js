@@ -14,6 +14,7 @@ const CardsBooks = (props) => {
 
   const handleAddToCart = () => {
     actions.añadirCarrito(props.titulo, props.precio, cantidad); // Pasamos la cantidad seleccionada
+    actions.sendCartData(store.car); // Enviamos el carrito completo al backend
   };
 
   const handleIncreaseQuantity = () => {
@@ -29,7 +30,7 @@ const CardsBooks = (props) => {
   return (
     <div className="card-group">
       <div className="card" style={{ maxWidth: "350px" }}>
-        <img src={rigoImageUrl} className="card-img-top" alt="..." />
+        <img src={props.imagen} className="card-img-top" alt="..." />
         <div className="card-body">
         <h5 className="card-title">Titulo: {props.titulo}</h5>
         <p className="card-text">Autor: {props.autor}</p>
