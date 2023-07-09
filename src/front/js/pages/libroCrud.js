@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Context } from "../store/appContext";
 import "../../styles/librosCrud.css";
 
@@ -15,10 +15,36 @@ export function LibroCRUD() {
   const [libroEditando, setLibroEditando] = useState(null);
   const { store, actions } = useContext(Context);
 
+  useEffect(() => {
+    // Obtener todos los libros al cargar el componente
+    actions.getLibros()
+      .then(data => setLibros(data))
+      .catch(error => console.log(error));
+  }, []);
+  console.log(store.libros);
+
+  const uploadImage = async (e) => {
+    const files = e.target.files;
+    const data = new FormData();
+    data.append("file", files[0]);
+    data.append("upload_preset", "images");
+    const res = await fetch("https://api.cloudinary.com/v1_1/ddorbh9wo/image/upload", {
+      method: "POST",
+      body: data,
+    });
+    const file = await res.json();
+
+    const imageUrl = file.secure_url; // Obtener la URL de la imagen desde file.secure_url
+
+    setImagen(imageUrl); // Asignar la URL de la imagen al estado imagen
+    console.log(imageUrl);
+  };
+
+   
   const handleSubmit = (e) => {
     e.preventDefault();
     const nuevoLibro = {
-      imagen: imagen ? imagen : '', // Asegúrate de que imagen contenga la URL de la imagen seleccionada
+      imagen,
       titulo,
       autor,
       categoria,
@@ -77,22 +103,22 @@ export function LibroCRUD() {
       .deleteLibro(id)
       .then(() => {
         // Actualizar la lista de libros después de eliminar uno
+        console.log(id)
         actions.getLibros()
           .then(data => setLibros(data))
           .catch(error => console.log(error));
       })
       .catch(error => console.log(error));
   };
-
+  
   return (
     <div className='container-fluid'>
       <h1>Agregar Libro</h1>
 
-      {/* Formulario para crear o editar un libro */}
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Imagen:</label>
-          <input type="file" value={imagen} onChange={(e) => setImagen(e.target.value)} />
+          <label>Imagen: <img src={imagen} style={{ width: "100px" }} alt="Libro" /></label>
+          <input type="file" onChange={uploadImage} />
         </div>
         <div>
           <label>Título:</label>
@@ -127,7 +153,7 @@ export function LibroCRUD() {
         {store.libros &&
           store.libros.map((libro, index) => (
             <li key={index}>
-              {libro.imagen && <img src={libro.imagen} alt="Imagen del libro" />}
+              <p><img src={libro.imagen} alt="Imagen del libro" /></p>
               <p>Título: <strong>{libro.titulo}</strong></p>
               <p>Autor: <strong>{libro.autor}</strong></p>
               <p>Categoría: <strong>{libro.categoria}</strong></p>
@@ -137,9 +163,8 @@ export function LibroCRUD() {
               <button className="btn btn-primary" onClick={() => handleEdit(libro)}>Editar</button>
               <button className="btn btn-danger" onClick={() => handleDelete(libro.id)}>Eliminar</button>
             </li>
-         ))}
+          ))}
       </ul>
-
     </div>
   );
 }

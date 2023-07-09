@@ -56,7 +56,6 @@ export const Navbar = () => {
                     ))}
                   </ul>
                 </div>
-<<<<<<< HEAD
                 <div className="dropdown">
                   <button
                     className="btn btn-secondary dropdown-toggle"
@@ -115,43 +114,6 @@ export const Navbar = () => {
                       <button className="btn btn-primary">Pagar</button>
                     </li>
                   </ul>
-=======
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="dropdown">
-          <button
-            className="btn btn-secondary dropdown-toggle"
-            type="button"
-            id="dropdownMenuButton1"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i className="grupoCart fa fa-shopping-cart fa-2x"></i>{" "}
-            <span className="badge bg-primary">{store.car.length}</span>
-          </button>
-          <ul className="dropdown-menu" style={{ width: "300px" }}>
-            {store.car.map((item, index) => (
-              <li key={index} className="dropdown-item d-flex container">
-                <div className="row align-items-center">
-                  <div className="col-3">
-                    <img src={item.image} width="50" height="50" alt={item.titulo} />
-                  </div>
-                  <div className="col-6">
-                    <div>{item.titulo}</div>
-                    <div>Precio: {item.precio}</div>
-                    <div>Cantidad: {item.cantidad}</div>
-                  </div>
-                  <div className="col-3 text-end justify-content-end">
-                    <button
-                      className="border border-0"
-                      onClick={() => actions.borrarCarrito(item)}
-                    >
-                      <i className="fa fa-solid fa-trash" />
-                    </button>
-                  </div>
->>>>>>> cb6f7fb848a05361ccfd8ea129e02c823847032c
                 </div>
       </div>
     </nav>

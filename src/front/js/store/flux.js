@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
     store: {
       libros: [
         {
+          imagen:"",
           titulo: "Libro 1",
           autor: "Autor 1",
           categoria: "Categoría 1",
@@ -13,6 +14,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           stock: 13
         },
         {
+          imagen:"",
           titulo: "Libro 2",
           autor: "Autor 2",
           categoria: "Categoría 2",
@@ -21,6 +23,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           stock: 13
         },
         {
+          imagen:"",
           titulo: "Libro 3",
           autor: "Autor 3",
           categoria: "Categoría 3",
@@ -34,6 +37,69 @@ const getState = ({ getStore, getActions, setStore }) => {
       favorite: []
     },
     actions: {
+      logout: () => {
+        console.log("logout")
+        setStore({auth: false})
+        localStorage.removeItem("token");
+      },
+  
+      login: (email, password) => {
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        };
+      
+        return fetch(`${API_URL}/login`, requestOptions)
+          .then(response => {
+            console.log(response.status);
+            if (response.status === 200) {
+              return response.json(); // Devuelve la respuesta como objeto JSON
+            } else {
+              throw new Error('Error occurred during login');
+            }
+          })
+          .then(data => {
+            if (data.user) {
+              return data; // Retorna la respuesta con el objeto user
+            } else {
+              throw new Error('User object is missing in the response');
+            }
+          })
+          .catch(error => {
+            throw new Error(`Error occurred during login: ${error.message}`);
+          });
+      },
+      
+  
+      signup: (email, password, ) => {
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json'},
+          body: JSON.stringify(
+          {
+            "email":email,
+            "password":password,
+           
+          }
+          )
+        };
+        fetch(`${API_URL}/signup`, requestOptions)
+          .then(response => { 
+            console.log(response.status)
+            if (response.status == 200){
+              setStore({auth: true})
+            }
+            return response.json()
+          })
+          .then(data => {
+            localStorage.setItem("token", data.access_token);
+            console.log(data)
+          });
+      },
       añadirCarrito: async (titulo, precio, cantidad) => {
         const store = getStore();
         const isItemInCart = store.car.some(item => item.titulo === titulo);
@@ -46,7 +112,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           };
           const updatedCart = [...store.car, newItem];
           setStore({ car: updatedCart });
-
+      
           try {
             const response = await fetch(`${API_URL}/cart`, {
               method: "POST",
@@ -55,10 +121,10 @@ const getState = ({ getStore, getActions, setStore }) => {
               },
               body: JSON.stringify({
                 libro_id: newItem.id, // Reemplaza "newItem.id" con la propiedad real del libro en el carrito
-                user_id: user_id // Reemplaza "user_id" con el ID real del usuario actual           
+                user_id: store.user_id // Obtén el user_id del estado global
               })
             });
-
+      
             if (response.ok) {
               // El elemento se agregó correctamente al carrito de compras en la base de datos
             } else {
@@ -218,25 +284,26 @@ const getState = ({ getStore, getActions, setStore }) => {
       //     throw new Error("Error al obtener el carrito");
       //   }
       // },
-      sendCartData: async (cartData) => {
+      sendCartData: async () => {
         try {
-          const response = await fetch(`${API_URL}/cart`,{
+          const store = getStore();
+          const response = await fetch(`${API_URL}/cart`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(cartData),
+            body: JSON.stringify(store.car),
           });
+      
           if (response.ok) {
-            // Manejar la respuesta exitosa del backend si es necesario
-            console.log("Cart data sent successfully");
+            // El carrito se envió correctamente al backend
+            console.log("Carrito enviado correctamente al backend");
+            // Aquí puedes realizar acciones adicionales después de enviar el carrito, si es necesario
           } else {
-            // Manejar el error si la respuesta no es exitosa
-            console.log("Error sending cart data to the backend");
+            console.log("Error al enviar el carrito al backend");
           }
         } catch (error) {
-          // Manejar el error de la solicitud
-          console.log("Error sending cart data to the backend", error);
+          console.log("Error al realizar la solicitud POST para enviar el carrito al backend", error);
         }
       },
 

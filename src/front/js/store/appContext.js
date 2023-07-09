@@ -31,6 +31,7 @@ const injectContext = PassedComponent => {
 			 **/
 			state.actions.getLibros();
 			state.actions.getUsuarios();
+			
 			//state.actions.getCarrito(); // <---- calling this function from the flux.js actions
 		}, []);
 

@@ -6,12 +6,8 @@ db = SQLAlchemy()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-<<<<<<< HEAD
     role = db.Column(db.String(50), nullable=False, default='usuario')  # Utilizando un campo de texto para el rol
-=======
->>>>>>> cb6f7fb848a05361ccfd8ea129e02c823847032c
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -24,15 +20,12 @@ class User(db.Model):
             # No serialices la contraseña, es un riesgo de seguridad
         }
 
-<<<<<<< HEAD
     def is_admin(self):
         return self.role == 'admin'
-=======
->>>>>>> cb6f7fb848a05361ccfd8ea129e02c823847032c
 
 class Libro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    imagen = db.Column(db.String(255))
+    imagen = db.Column(db.String(255), nullable=False)
     titulo = db.Column(db.String(100), nullable=False)
     autor = db.Column(db.String(100), nullable=False)
     categoria = db.Column(db.String(100), nullable=False)
@@ -61,3 +54,28 @@ class Libro(db.Model):
             "stock": self.stock,
             
         }
+class CartItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    libro_id = db.Column(db.Integer, db.ForeignKey('libro.id'), nullable=False)
+    libro = db.relationship('Libro', backref='cart_items')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref='cart_items')
+    quantity = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, libro, user, quantity):
+        self.libro = libro
+        self.user = user
+        self.quantity = quantity
+
+    def serialize(self):
+        serialized_data = {
+            "id": self.id,
+            "libro": self.libro.serialize(),
+            "user": self.user.serialize(),
+            "quantity": self.quantity,
+            "stock": self.libro.stock,
+            "imagen": self.libro.imagen
+        }
+        if hasattr(self.libro, 'precio'):
+            serialized_data["precio"] = self.libro.precio
+        return serialized_data
