@@ -25,7 +25,7 @@ class User(db.Model):
 
 class Libro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    imagen = db.Column(db.String(255), nullable=False)
+    imagen = db.Column(db.String(255), nullable=True)
     titulo = db.Column(db.String(100), nullable=False)
     autor = db.Column(db.String(100), nullable=False)
     categoria = db.Column(db.String(100), nullable=False)
@@ -33,7 +33,7 @@ class Libro(db.Model):
     precio = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, titulo, autor, categoria, detalle, precio, stock, imagen=None):
+    def __init__(self, titulo, autor, categoria, detalle, precio, stock, imagen):
         self.imagen = imagen
         self.titulo = titulo
         self.autor = autor

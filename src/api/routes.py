@@ -12,15 +12,15 @@ from .models import db, User, Libro, CartItem
 from .utils import generate_sitemap, APIException
 from flask_jwt_extended import JWTManager
 
+app = Flask(__name__)
+CORS(app)
+
+# Configuración del JWTManager
+app.config['JWT_SECRET_KEY'] = 'clave-secreta'
+jwt = JWTManager(app)
+
+# Blueprint
 api = Blueprint('api', __name__)
-CORS(api, origins='https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3000.preview.app.github.dev/') 
-api.config = {}
-
-# Configuración de la API
-# Cambia esto por una clave secreta más segura
-api.config['JWT_SECRET_KEY'] = 'clave-secreta'
-jwt = JWTManager(api)
-
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -72,12 +72,18 @@ def signup():
         user = User(email=body["email"], password=body["password"])
         db.session.add(user)
         db.session.commit()
+        
+        access_token = create_access_token(identity=body["email"])
+        
         response_body = {
-            "msg": "Usuario creado"
+            "msg": "Usuario creado",
+            "access_token": access_token,
+            "user": user.serialize()
         }
+        
         return jsonify(response_body), 200
     else:
-        return jsonify({"msg": "Ya se encuentra un usuario creado con ese correo"}), 401
+        return jsonify({"msg": "Ya se encuentra un usuario creado con ese correo"}), 409
 
 
 @api.route("/private", methods=["GET"])
@@ -118,6 +124,29 @@ def create_libro():
     db.session.commit()
 
     return jsonify(libro.serialize()), 201
+@api.route('/libros/<int:libro_id>', methods=['PUT'])
+def update_libro(libro_id):
+    libro = Libro.query.get(libro_id)
+    if libro:
+        libro.titulo = request.json.get('titulo')
+        libro.autor = request.json.get('autor')
+        libro.categoria = request.json.get('categoria')
+        libro.detalle = request.json.get('detalle')
+        libro.precio = request.json.get('precio')
+        libro.stock = request.json.get('stock')
+        db.session.commit()
+        return jsonify(libro.serialize()), 200
+    else:
+        return jsonify({'message': 'Libro not found'}), 404
+@api.route('/libros/<int:libro_id>', methods=['DELETE'])
+def delete_libro(libro_id):
+    libro = Libro.query.get(libro_id)
+    if libro:
+        db.session.delete(libro)
+        db.session.commit()
+        return jsonify({'message': 'Libro deleted'}), 200
+    else:
+        return jsonify({'message': 'Libro not found'}), 404
 
 # carrito de compras
 

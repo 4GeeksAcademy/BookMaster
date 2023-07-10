@@ -55,7 +55,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       
         return fetch(`${API_URL}/login`, requestOptions)
           .then(response => {
-            console.log(response.status);
             if (response.status === 200) {
               return response.json(); // Devuelve la respuesta como objeto JSON
             } else {
@@ -63,10 +62,11 @@ const getState = ({ getStore, getActions, setStore }) => {
             }
           })
           .then(data => {
-            if (data.user) {
-              return data; // Retorna la respuesta con el objeto user
+            if (data.user && data.access_token) {
+              const token = data.access_token; // Obtén el token de la respuesta
+              return { user: data.user, token: token }; // Retorna el objeto user y el token
             } else {
-              throw new Error('User object is missing in the response');
+              throw new Error('User object or token is missing in the response');
             }
           })
           .catch(error => {
@@ -75,29 +75,35 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       
   
-      signup: (email, password, ) => {
+      signup: (email, password) => {
         const requestOptions = {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json'},
-          body: JSON.stringify(
-          {
-            "email":email,
-            "password":password,
-           
-          }
-          )
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
         };
-        fetch(`${API_URL}/signup`, requestOptions)
+      
+        return fetch(`${API_URL}/signup`, requestOptions)
           .then(response => { 
-            console.log(response.status)
-            if (response.status == 200){
-              setStore({auth: true})
+            if (response.status === 200) {
+              return response.json();
+            } else {
+              throw new Error('Error occurred during signup');
             }
-            return response.json()
           })
           .then(data => {
-            localStorage.setItem("token", data.access_token);
-            console.log(data)
+            if (data.access_token) {
+              const token = data.access_token; // Obtén el token de la respuesta
+              // Realiza las acciones necesarias con el token
+              console.log(`Token: ${token}`);
+            } else {
+              throw new Error('Token is missing in the response');
+            }
+          })
+          .catch(error => {
+            throw new Error(`Error occurred during signup: ${error.message}`);
           });
       },
       añadirCarrito: async (titulo, precio, cantidad) => {
@@ -138,7 +144,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         }
       },
-
+      
+    
       borrarCarrito: item => {
         const store = getStore();
         const updatedCart = store.car.filter(el => el.titulo !== item.titulo);
@@ -306,7 +313,14 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error al realizar la solicitud POST para enviar el carrito al backend", error);
         }
       },
-
+      calculateTotal: () => {
+        const store = getStore();
+        const total = store.car.reduce(
+          (accumulator, item) => accumulator + item.precio * item.cantidad,
+          0
+        );
+        return `$${total.toFixed(2)}`;
+      },
       // añadirCarrito: async carritoItem => {
       //    try {
       //      const response = await fetch(`${API_URL}/cart`, {
