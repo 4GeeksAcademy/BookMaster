@@ -3,17 +3,17 @@ import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import '../../styles/direccionesCrud.css';
 
-
 export const DireccionesCrud = () => {
+  const { store, actions } = useContext(Context);
   const [direcciones, setDirecciones] = useState([]);
-  const [direccion, setDireccion] = useState('');
-  const [ciudad, setCiudad] = useState('');
-  const [pais, setPais] = useState('');
-  const { actions, store } = useContext(Context);
-  
+  const [direccion, setDireccion] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [pais, setPais] = useState("");
+
   useEffect(() => {
+    // Cargar las direcciones al iniciar el componente
     actions.getDirecciones();
-  }, []);
+  }, [actions]);
 
   const handleAddDireccion = () => {
     const newDireccion = {
@@ -21,10 +21,19 @@ export const DireccionesCrud = () => {
       ciudad: ciudad,
       pais: pais
     };
-    actions.addDireccion(newDireccion);
-    setDireccion('');
-    setCiudad('');
-    setPais('');
+    actions.addDireccion(newDireccion)
+      .then(() => {
+        // Actualizar las direcciones después de agregar una nueva
+        actions.getDirecciones();
+      })
+      .catch(error => {
+        console.log("Error al agregar la dirección", error);
+      });
+
+    // Limpiar los campos de entrada
+    setDireccion("");
+    setCiudad("");
+    setPais("");
   };
 
   const handleEditDireccion = (id, direccion, ciudad, pais) => {
@@ -33,12 +42,31 @@ export const DireccionesCrud = () => {
       ciudad: ciudad,
       pais: pais
     };
-    actions.editDireccion(id, updatedDireccion);
+    actions.editDireccion(id, updatedDireccion)
+      .then(() => {
+        // Actualizar las direcciones después de editar
+        actions.getDirecciones();
+      })
+      .catch(error => {
+        console.log("Error al editar la dirección", error);
+      });
   };
 
   const handleDeleteDireccion = id => {
-    actions.deleteDireccion(id);
+    actions.deleteDireccion(id)
+      .then(() => {
+        // Actualizar las direcciones después de eliminar
+        actions.getDirecciones();
+      })
+      .catch(error => {
+        console.log("Error al eliminar la dirección", error);
+      });
   };
+
+  useEffect(() => {
+    // Actualizar el estado local de las direcciones cada vez que cambie la lista de direcciones en el store
+    setDirecciones(store.direcciones);
+  }, [store.direcciones]);
 
   const renderDirecciones = () => {
     return direcciones.map(direccion => (
@@ -83,9 +111,7 @@ export const DireccionesCrud = () => {
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody>
-          {renderDirecciones()}
-        </tbody>
+        <tbody>{renderDirecciones()}</tbody>
       </table>
       <div>
         <h3>Agregar Dirección</h3>

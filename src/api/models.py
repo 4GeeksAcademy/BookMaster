@@ -80,20 +80,14 @@ class CartItem(db.Model):
 
 class Direccion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
     direccion = db.Column(db.String(255), nullable=False)
     ciudad = db.Column(db.String(100), nullable=False)
-    codigo_postal = db.Column(db.String(20), nullable=False)
     pais = db.Column(db.String(100), nullable=False)
-    tipo = db.Column(db.String(50), nullable=False)
 
     def to_dict(self):
         return {
             'id': self.id,
-            'nombre': self.nombre,
             'direccion': self.direccion,
             'ciudad': self.ciudad,
-            'codigo_postal': self.codigo_postal,
             'pais': self.pais,
-            'tipo': self.tipo
         }

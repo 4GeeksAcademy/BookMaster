@@ -179,44 +179,48 @@ def update_cart_item(cart_item_id):
 
     
 @api.route('/direcciones', methods=['GET'])
-def obtener_direcciones():
+def get_direcciones():
     direcciones = Direccion.query.all()
-    return jsonify([direccion.to_dict() for direccion in direcciones])
+    serialized_direcciones = [direccion.to_dict() for direccion in direcciones]
+    return jsonify(serialized_direcciones), 200
+
 
 @api.route('/direcciones', methods=['POST'])
-def crear_direccion():
-    nueva_direccion_data = request.get_json()
-    nueva_direccion = Direccion(**nueva_direccion_data)
-    db.session.add(nueva_direccion)
+def create_direccion():
+    direccion_data = request.get_json()
+    direccion = Direccion(direccion=direccion_data['direccion'],
+                          ciudad=direccion_data['ciudad'],
+                          pais=direccion_data['pais'])
+    db.session.add(direccion)
     db.session.commit()
-    return jsonify(nueva_direccion.to_dict()), 201
+    return jsonify(direccion.to_dict()), 201
+
 
 @api.route('/direcciones/<int:direccion_id>', methods=['GET'])
-def obtener_direccion(direccion_id):
+def get_direccion(direccion_id):
     direccion = Direccion.query.get(direccion_id)
     if direccion:
         return jsonify(direccion.to_dict())
     else:
         return jsonify({'error': 'Dirección no encontrada'}), 404
 
+
 @api.route('/direcciones/<int:direccion_id>', methods=['PUT'])
-def actualizar_direccion(direccion_id):
-    direccion_actualizada_data = request.get_json()
-    direccion_actualizada = Direccion.query.get(direccion_id)
-    if direccion_actualizada:
-        direccion_actualizada.nombre = direccion_actualizada_data['nombre']
-        direccion_actualizada.direccion = direccion_actualizada_data['direccion']
-        direccion_actualizada.ciudad = direccion_actualizada_data['ciudad']
-        direccion_actualizada.codigo_postal = direccion_actualizada_data['codigo_postal']
-        direccion_actualizada.pais = direccion_actualizada_data['pais']
-        direccion_actualizada.tipo = direccion_actualizada_data['tipo']
+def update_direccion(direccion_id):
+    direccion_data = request.get_json()
+    direccion = Direccion.query.get(direccion_id)
+    if direccion:
+        direccion.direccion = direccion_data['direccion']
+        direccion.ciudad = direccion_data['ciudad']
+        direccion.pais = direccion_data['pais']
         db.session.commit()
-        return jsonify(direccion_actualizada.to_dict())
+        return jsonify(direccion.to_dict())
     else:
         return jsonify({'error': 'Dirección no encontrada'}), 404
 
+
 @api.route('/direcciones/<int:direccion_id>', methods=['DELETE'])
-def eliminar_direccion(direccion_id):
+def delete_direccion(direccion_id):
     direccion = Direccion.query.get(direccion_id)
     if direccion:
         db.session.delete(direccion)
@@ -224,3 +228,4 @@ def eliminar_direccion(direccion_id):
         return '', 204
     else:
         return jsonify({'error': 'Dirección no encontrada'}), 404
+
