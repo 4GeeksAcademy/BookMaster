@@ -14,8 +14,8 @@ export const Private = () => {
     loading: true
   });
 
-  const checkUser = async (token) => {
-    const checkApiUrl = "https://stalinnarvaez-silver-space-enigma-qjvgj5x95gxh9wqx-3001.preview.app.github.dev/api/private";
+    const checkUser = async (token) => {
+        const checkApiUrl = process.env.BACKEND_URL + "api/private";
 
     const requestAuth = {
       method: "GET",

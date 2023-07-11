@@ -1,6 +1,3 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
 import os
 from flask import Flask, request, jsonify, url_for, send_from_directory, request
 from flask_migrate import Migrate
@@ -35,7 +32,7 @@ MIGRATE = Migrate(app, db, compare_type = True)
 db.init_app(app)
 
 # Allow CORS requests to this API
-CORS(app)
+CORS(app, origins='https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3000.preview.app.github.dev')
 
 # add the admin
 setup_admin(app)
