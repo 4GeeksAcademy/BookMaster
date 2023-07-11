@@ -13,7 +13,8 @@ import {LibroCRUD } from "./pages/libroCrud.js";
 import {ForgotPassword } from "./pages/forgotPassword.js";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
-
+import { DireccionesCrud} from "./pages/direccionesCrud";
+ 
 //create your first component
 const Layout = () => {
     //the basename is used when your project is published in a subdirectory and not in the root of the domain
@@ -35,6 +36,7 @@ const Layout = () => {
                         <Route element={<LibroCRUD />} path="/libros" />
                         <Route element={<ForgotPassword />} path="/forgot-password" />
                         <Route element={<h1>Not found!</h1>} />
+                        <Route element={<DireccionesCrud />} path="/direcciones" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
