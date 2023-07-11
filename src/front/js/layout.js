@@ -17,6 +17,8 @@ import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import {CheckoutPage} from "./pages/checkout";
 
+import { DireccionesCrud} from "./pages/direccionesCrud";
+ 
 //create your first component
 const Layout = () => {
     //the basename is used when your project is published in a subdirectory and not in the root of the domain
@@ -41,6 +43,7 @@ const Layout = () => {
                         <Route element={<ForgotPassword />} path="/forgot-password" /> 
                         <Route element={<CheckoutPage />} path="/checkout" /> 
                         <Route element={<h1>Not found!</h1>} />
+                        <Route element={<DireccionesCrud />} path="/direcciones" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
