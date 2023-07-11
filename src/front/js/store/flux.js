@@ -1,4 +1,6 @@
+
 const API_URL = "https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api";
+
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -34,7 +36,8 @@ const getState = ({ getStore, getActions, setStore }) => {
       ],
       usuarios: [],
       car: [],
-      favorite: []
+      favorite: [],
+      direcciones: []
     },
     actions: {
       logout: () => {
@@ -313,6 +316,75 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error al realizar la solicitud POST para enviar el carrito al backend", error);
         }
       },
+
+getDirecciones: async () => {
+  try {
+    const response = await fetch(`${API_URL}/direcciones`);
+    if (response.ok) {
+      const data = await response.json();
+      setStore({ direcciones: data });
+    }
+  } catch (error) {
+    console.log("Error al obtener las direcciones", error);
+  }
+},
+
+addDireccion: async direccion => {
+  try {
+    const response = await fetch(`${API_URL}/direcciones`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(direccion)
+    });
+    if (response.ok) {
+      const data = await response.json();
+      const store = getStore();
+      const updatedDirecciones = [...store.direcciones, data];
+      setStore({ direcciones: updatedDirecciones });
+    }
+  } catch (error) {
+    console.log("Error al crear la dirección", error);
+  }
+},
+
+editDireccion: async (id, direccion) => {
+  try {
+    const response = await fetch(`${API_URL}/direcciones/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(direccion)
+    });
+    if (response.ok) {
+      const data = await response.json();
+      const store = getStore();
+      const updatedDirecciones = store.direcciones.map(item => (item.id === id ? data : item));
+      setStore({ direcciones: updatedDirecciones });
+    }
+  } catch (error) {
+    console.log("Error al editar la dirección", error);
+  }
+},
+
+deleteDireccion: async id => {
+  try {
+    const response = await fetch(`${API_URL}/direcciones/${id}`, {
+      method: "DELETE"
+    });
+    if (response.ok) {
+      const store = getStore();
+      const updatedDirecciones = store.direcciones.filter(item => item.id !== id);
+      setStore({ direcciones: updatedDirecciones });
+    }
+  } catch (error) {
+    console.log("Error al eliminar la dirección", error);
+  }
+},
+
+      
       calculateTotal: () => {
         const store = getStore();
         const total = store.car.reduce(
@@ -321,6 +393,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         );
         return `$${total.toFixed(2)}`;
       },
+
       // añadirCarrito: async carritoItem => {
       //    try {
       //      const response = await fetch(`${API_URL}/cart`, {
@@ -381,4 +454,6 @@ const getState = ({ getStore, getActions, setStore }) => {
     }
   };
 };
+
 export default getState;
+

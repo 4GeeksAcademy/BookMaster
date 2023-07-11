@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, url_for, send_from_directory
+from flask import Flask, request, jsonify, url_for, send_from_directory, request
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -69,3 +69,4 @@ def serve_any_other_file(path):
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
     app.run(host='0.0.0.0', port=PORT, debug=True)
+

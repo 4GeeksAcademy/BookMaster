@@ -8,12 +8,17 @@ from flask_cors import CORS
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
-from .models import db, User, Libro, CartItem
+from .models import db, User, Libro, CartItem, Direccion
 from .utils import generate_sitemap, APIException
 from flask_jwt_extended import JWTManager
 
+
+
+
+
 app = Flask(__name__)
 CORS(app)
+
 
 # Configuración del JWTManager
 app.config['JWT_SECRET_KEY'] = 'clave-secreta'
@@ -207,3 +212,56 @@ def update_cart_item(cart_item_id):
         return jsonify(cart_item.serialize()), 200
     else:
         return jsonify({'message': 'Cart item not found'}), 404
+
+    
+@api.route('/direcciones', methods=['GET'])
+def get_direcciones():
+    direcciones = Direccion.query.all()
+    serialized_direcciones = [direccion.to_dict() for direccion in direcciones]
+    return jsonify(serialized_direcciones), 200
+
+
+@api.route('/direcciones', methods=['POST'])
+def create_direccion():
+    direccion_data = request.get_json()
+    direccion = Direccion(direccion=direccion_data['direccion'],
+                          ciudad=direccion_data['ciudad'],
+                          pais=direccion_data['pais'])
+    db.session.add(direccion)
+    db.session.commit()
+    return jsonify(direccion.to_dict()), 201
+
+
+@api.route('/direcciones/<int:direccion_id>', methods=['GET'])
+def get_direccion(direccion_id):
+    direccion = Direccion.query.get(direccion_id)
+    if direccion:
+        return jsonify(direccion.to_dict())
+    else:
+        return jsonify({'error': 'Dirección no encontrada'}), 404
+
+
+@api.route('/direcciones/<int:direccion_id>', methods=['PUT'])
+def update_direccion(direccion_id):
+    direccion_data = request.get_json()
+    direccion = Direccion.query.get(direccion_id)
+    if direccion:
+        direccion.direccion = direccion_data['direccion']
+        direccion.ciudad = direccion_data['ciudad']
+        direccion.pais = direccion_data['pais']
+        db.session.commit()
+        return jsonify(direccion.to_dict())
+    else:
+        return jsonify({'error': 'Dirección no encontrada'}), 404
+
+
+@api.route('/direcciones/<int:direccion_id>', methods=['DELETE'])
+def delete_direccion(direccion_id):
+    direccion = Direccion.query.get(direccion_id)
+    if direccion:
+        db.session.delete(direccion)
+        db.session.commit()
+        return '', 204
+    else:
+        return jsonify({'error': 'Dirección no encontrada'}), 404
+

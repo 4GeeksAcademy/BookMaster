@@ -78,4 +78,22 @@ class CartItem(db.Model):
         }
         if hasattr(self.libro, 'precio'):
             serialized_data["precio"] = self.libro.precio
+
         return serialized_data
+
+class Direccion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    direccion = db.Column(db.String(255), nullable=False)
+    ciudad = db.Column(db.String(100), nullable=False)
+    pais = db.Column(db.String(100), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'direccion': self.direccion,
+            'ciudad': self.ciudad,
+            'pais': self.pais,
+        }
+
+        return serialized_data
+
