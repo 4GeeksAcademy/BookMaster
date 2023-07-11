@@ -144,8 +144,14 @@ export const DireccionesCrud = () => {
         </button>
       </div>
       <div>
-        <Link to="/">Volver</Link>
-      </div>
+  <span style={{ display: 'block' }}>
+    <Link to="/">Volver</Link>
+  </span>
+  <span style={{ display: 'block' }}>
+    <Link to="/checkout">Checkout</Link>
+  </span>
+</div>
+
     </div>
   );
 };
