@@ -21,7 +21,7 @@ export const Login = () => {
 
       if (user) {
         if (user.role === "admin") {
-          navigate("/libros"); // Redirigir al usuario administrador a la página de libros
+          navigate("/vista-admin"); // Redirigir al usuario administrador a la página de libros
         } else {
           navigate("/"); // Redirigir al usuario normal a la página principal
         }

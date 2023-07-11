@@ -106,16 +106,18 @@ const getState = ({ getStore, getActions, setStore }) => {
             throw new Error(`Error occurred during signup: ${error.message}`);
           });
       },
-      añadirCarrito: async (titulo, precio, cantidad) => {
+      añadirCarrito: async (id, titulo, precio, cantidad) => {
         const store = getStore();
         const isItemInCart = store.car.some(item => item.titulo === titulo);
       
         if (!isItemInCart) {
           const newItem = {
+            id: id,
             titulo: titulo,
             precio: precio,
-            cantidad: cantidad // Actualizar la cantidad con el valor pasado como parámetro
+            cantidad: cantidad,
           };
+      
           const updatedCart = [...store.car, newItem];
           setStore({ car: updatedCart });
       
@@ -123,11 +125,13 @@ const getState = ({ getStore, getActions, setStore }) => {
             const response = await fetch(`${API_URL}/cart`, {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${store.token}` // Agrega el token al encabezado de la solicitud
               },
               body: JSON.stringify({
-                libro_id: newItem.id, // Reemplaza "newItem.id" con la propiedad real del libro en el carrito
-                user_id: store.user_id // Obtén el user_id del estado global
+                libro_id: newItem.id,
+                user_id: store.token, // Utiliza el token como user_id
+                quantity: newItem.cantidad
               })
             });
       

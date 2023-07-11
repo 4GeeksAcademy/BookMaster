@@ -13,8 +13,8 @@ const CardsBooks = (props) => {
   };
 
   const handleAddToCart = () => {
-    actions.añadirCarrito(props.titulo, props.precio, cantidad); // Pasamos la cantidad seleccionada
-    actions.sendCartData(store.car); // Enviamos el carrito completo al backend
+    actions.añadirCarrito(props.id, props.titulo, props.precio, cantidad); // Pasamos el id, título, precio y cantidad seleccionada
+    actions.sendCartData(); // Enviamos el carrito completo al backend
   };
 
   const handleIncreaseQuantity = () => {
@@ -32,26 +32,24 @@ const CardsBooks = (props) => {
       <div className="card" style={{ maxWidth: "350px" }}>
         <img src={props.imagen} className="card-img-top" alt="..." />
         <div className="card-body">
-        <h5 className="card-title">Titulo: {props.titulo}</h5>
-        <p className="card-text">Autor: {props.autor}</p>
-        <p className="card-text">Categoría: {props.categoria}</p>
-        <p className="card-text">Detalles:{props.detalle}</p>
-        <p className="card-text">Precio: {props.precio}</p>
-        <p className="card-text">Disponibles: {props.stock}</p>
-        <button 
-            data-toggle="modal"
-            className={`btn btn-primary`}
+          <h5 className="card-title">Titulo: {props.titulo}</h5>
+          <p className="card-text">Autor: {props.autor}</p>
+          <p className="card-text">Categoría: {props.categoria}</p>
+          <p className="card-text">Detalles:{props.detalle}</p>
+          <p className="card-text">Precio: {props.precio}</p>
+          <p className="card-text">Disponibles: {props.stock}</p>
+          <button
+            className={`btn btn-primary ${isItemInCart ? 'disabled' : ''}`}
             type="button"
             onClick={handleAddToCart}
-            id="cartButton">
-          Agregar al carrito
-        </button>
-
+            disabled={isItemInCart}
+          >
+            {isItemInCart ? 'Agregado al carrito' : 'Agregar al carrito'}
+          </button>
           <div className="card-footer">
             <small className="text-secondary">
               <span>
                 <button
-                  data-toggle="modal"
                   className="btn btn-light btn-lg position-absolute top-0 start-0"
                   type="button"
                   onClick={handleAddToFavorites}

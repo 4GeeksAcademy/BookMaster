@@ -20,10 +20,10 @@ export const Navbar = () => {
           Login
         </a>
         <div className="dropdown m-2">
-          {/* Dropdown de favoritos */}
+          
         </div>
         <div className="dropdown">
-          {/* Dropdown de carrito */}
+          
           <button
             className="btn btn-secondary dropdown-toggle"
             type="button"

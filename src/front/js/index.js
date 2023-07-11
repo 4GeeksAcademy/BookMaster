@@ -9,4 +9,14 @@ import "../styles/index.css";
 import Layout from "./layout";
 
 //render your react application
-ReactDOM.render(<Layout />, document.querySelector("#app"));
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+
+
+ReactDOM.render(
+    <PayPalScriptProvider options={{ "client-id": "Ae6Qy6OiiFup5j-E95W64xbyCh8nqMwMX-EKgtZ1PI45kfH9mn8rn1pkxzbGio_MtsIRP6XYdlebPtZI" }}>
+      <Layout />
+    </PayPalScriptProvider>,
+    document.getElementById("app")
+  );
+
+

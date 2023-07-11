@@ -151,11 +151,15 @@ def delete_libro(libro_id):
 # carrito de compras
 
 @api.route('/cart', methods=['GET'])
-def get_cart_items():
-    cart_items = CartItem.query.all()
-    serialized_cart_items = [cart_item.serialize() for cart_item in cart_items]
-    return jsonify(serialized_cart_items), 200
+def get_cart():
+    try:
+        cart_items = CartItem.query.all()  # Obtener todos los elementos del carrito
 
+        serialized_cart = [item.serialize() for item in cart_items]
+
+        return jsonify(serialized_cart), 200
+    except Exception as e:
+        return jsonify({'message': 'Error getting cart', 'error': str(e)}), 500
 
 @api.route('/cart', methods=['POST'])
 def create_cart():
