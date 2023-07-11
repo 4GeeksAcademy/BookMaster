@@ -1,8 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { Context } from "../store/appContext";
-import "../../styles/librosCrud.css";
+import { Context } from '../store/appContext';
+import '../../styles/librosCrud.css';
 
-export function LibroCRUD() {
+export const LibroCRUD = ({ onLibroIdChange }) => {
+  const { store, actions } = useContext(Context);
+
   const [libros, setLibros] = useState([]);
   const [imagen, setImagen] = useState('');
   const [titulo, setTitulo] = useState('');
@@ -13,7 +15,6 @@ export function LibroCRUD() {
   const [stock, setStock] = useState('');
   const [editando, setEditando] = useState(false);
   const [libroEditando, setLibroEditando] = useState(null);
-  const { store, actions } = useContext(Context);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,14 +30,15 @@ export function LibroCRUD() {
 
     if (editando) {
       // Editar un libro existente
-      actions.editLibro(libroEditando.id, nuevoLibro)
+      actions
+        .editLibro(libroEditando.id, nuevoLibro)
         .then(() => {
           // Actualizar la lista de libros después de editar uno
           actions.getLibros()
-            .then(data => setLibros(data))
-            .catch(error => console.log(error));
+            .then((data) => setLibros(data))
+            .catch((error) => console.log(error));
         })
-        .catch(error => console.log(error));
+        .catch((error) => console.log(error));
 
       // Limpiar los campos de edición y restablecer el estado
       setImagen('');
@@ -50,14 +52,15 @@ export function LibroCRUD() {
       setLibroEditando(null);
     } else {
       // Crear un nuevo libro
-      actions.addLibro(nuevoLibro)
+      actions
+        .addLibro(nuevoLibro)
         .then(() => {
           // Actualizar la lista de libros después de crear uno nuevo
           actions.getLibros()
-            .then(data => setLibros(data))
-            .catch(error => console.log(error));
+            .then((data) => setLibros(data))
+            .catch((error) => console.log(error));
         })
-        .catch(error => console.log(error));
+        .catch((error) => console.log(error));
 
       // Limpiar los campos de entrada después de enviar el formulario
       setImagen('');
@@ -80,28 +83,46 @@ export function LibroCRUD() {
     setStock(libro.stock);
     setEditando(true);
     setLibroEditando(libro);
+
+    // Llamar a onLibroIdChange con el valor del ID del libro
+    if (onLibroIdChange) {
+      onLibroIdChange(libro.id);
+    }
   };
 
   const handleDelete = (id) => {
-    actions.deleteLibro(id)
+    actions
+      .deleteLibro(id)
       .then(() => {
         // Actualizar la lista de libros después de eliminar uno
         actions.getLibros()
-          .then(data => setLibros(data))
-          .catch(error => console.log(error));
+          .then((data) => setLibros(data))
+          .catch((error) => console.log(error));
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imageDataURL = reader.result;
+        setImagen(imageDataURL);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
-    <div className='container-fluid'>
+    <div className="container-fluid">
       <h1>Agregar Libro</h1>
 
       {/* Formulario para crear o editar un libro */}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Imagen:</label>
-          <input type="file" value={imagen} onChange={(e) => setImagen(e.target.value)} />
+          <input type="file" onChange={handleFileChange} />
         </div>
         <div>
           <label>Título:</label>
@@ -127,26 +148,52 @@ export function LibroCRUD() {
           <label>Stock:</label>
           <input type="number" value={stock} onChange={(e) => setStock(parseInt(e.target.value))} />
         </div>
-        <button className="btn btn-primary" type="submit">{editando ? 'Guardar Cambios' : 'Crear Libro'}</button>
+        <button className="btn btn-primary" type="submit">
+          {editando ? 'Guardar Cambios' : 'Crear Libro'}
+        </button>
       </form>
 
       {/* Lista de libros */}
       <h2>Lista de Libros</h2>
       <ul>
-        {store.libros && store.libros.map((libro) => (
-          <li key={libro.id}>
-            <p>Imagen: <strong>{libro.imagen}</strong></p>
-            <p>Título: <strong>{libro.titulo}</strong></p>
-            <p>Autor: <strong>{libro.autor}</strong></p>
-            <p>Categoría: <strong>{libro.categoria}</strong></p>
-            <p>Detalles: <strong>{libro.detalle}</strong></p>
-            <p>Precio: <strong>{libro.precio}</strong></p>
-            <p>Stock: <strong>{libro.stock}</strong></p>
-            <button className="btn btn-primary" onClick={() => handleEdit(libro)}>Editar</button>
-            <button className="btn btn-danger" onClick={() => handleDelete(libro.id)}>Eliminar</button>
-          </li>
-        ))}
+        {store.libros &&
+          store.libros.map((libro) => (
+            <li key={libro.id}>
+              <p>
+                ID: <strong>{libro.id}</strong>
+              </p>
+              <p>
+                Imagen: <strong>{libro.imagen}</strong>
+              </p>
+              <p>
+                Título: <strong>{libro.titulo}</strong>
+              </p>
+              <p>
+                Autor: <strong>{libro.autor}</strong>
+              </p>
+              <p>
+                Categoría: <strong>{libro.categoria}</strong>
+              </p>
+              <p>
+                Detalles: <strong>{libro.detalle}</strong>
+              </p>
+              <p>
+                Precio: <strong>{libro.precio}</strong>
+              </p>
+              <p>
+                Stock: <strong>{libro.stock}</strong>
+              </p>
+              <button className="btn btn-primary" onClick={() => handleEdit(libro)}>
+                Editar
+              </button>
+              <button className="btn btn-danger" onClick={() => handleDelete(libro.id)}>
+                Eliminar
+              </button>
+            </li>
+          ))}
       </ul>
     </div>
   );
-}
+};
+
+export default LibroCRUD;
