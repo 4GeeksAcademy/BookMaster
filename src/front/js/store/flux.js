@@ -38,6 +38,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             if (response.ok) {
               // El elemento se agregó correctamente al carrito de compras en la base de datos
+              getActions().getCarrito(); // Obtener los datos actualizados del carrito
             } else {
               console.log("Error al agregar el elemento al carrito de compras en la base de datos");
             }
@@ -55,6 +56,15 @@ const getState = ({ getStore, getActions, setStore }) => {
           if (response.ok) {
             const data = await response.json();
             console.log("Datos del carrito:", data); // Imprime los datos en la consola
+
+            // Verificar la estructura de los datos del carrito
+            data.forEach(item => {
+              console.log(item.libro);
+            });
+
+            // Actualiza el estado del carrito en el contexto
+            setStore({ car: data });
+
             return data;
           } else {
             throw new Error("Error al obtener el carrito");
@@ -63,12 +73,11 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error al obtener el carrito", error);
           throw new Error("Error al obtener el carrito");
         }
-      },     
-
+      },
       eliminarElementoCarrito: async (cartItemId) => {
         try {
           console.log("ID del elemento a eliminar:", cartItemId); // Verificar el ID antes de eliminar
-      
+
           const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
             method: "DELETE",
           });
@@ -83,20 +92,22 @@ const getState = ({ getStore, getActions, setStore }) => {
         } catch (error) {
           console.log("Error al realizar la solicitud DELETE para eliminar el elemento del carrito", error);
         }
-      },      
-
-      editarCarrito: async (carritoItemId, carritoItem) => {
+      },
+      editarCarrito: async (cartItemId, cartItem) => {
         try {
-          const response = await fetch(`${API_URL}/cart/${carritoItemId}`, {
+          const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify(carritoItem)
+            body: JSON.stringify(cartItem)
           });
+      
           if (response.ok) {
             const data = await response.json();
-            return data;
+            const store = getStore();
+            const updatedCartItems = store.carrito.map(item => (item.id === cartItemId ? data : item));
+            setStore({ carrito: updatedCartItems });
           } else {
             throw new Error("Error al editar el carrito");
           }
@@ -104,6 +115,10 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error al editar el carrito", error);
           throw new Error("Error al editar el carrito");
         }
+      },      
+      
+      setCartItemId: (cartItemId) => {
+        setStore({ cartItemId: cartItemId });
       },
       aumentarCantidad: titulo => {
         const store = getStore();

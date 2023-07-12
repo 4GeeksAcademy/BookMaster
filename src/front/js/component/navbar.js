@@ -1,30 +1,21 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
+import rigoImageUrl from "../../img/rigo-baby.jpg";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
-  const [car, setCar] = useState([]);
-
-  const rigoImageUrl = "";
 
   const calculateTotal = () => {
     const total = store.car.reduce(
-      (accumulator, item) => accumulator + item.precio * item.cantidad,
+      (accumulator, item) => accumulator + item.precio * item.quantity,
       0
     );
     return `$${total.toFixed(2)}`;
   };
 
-  const handleRemoveFromCart = async (cartItem) => {
-    try {
-      await actions.eliminarElementoCarrito(cartItem.id);
-      const updatedCarrito = await actions.getCarrito();
-      console.log("Carrito actualizado:", updatedCarrito);
-      setCar(updatedCarrito);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleRemoveFromCart = (itemId) => {
+    actions.eliminarElementoCarrito(itemId);
   };
 
   return (
@@ -33,17 +24,17 @@ export const Navbar = () => {
         <img src={rigoImageUrl} width="70" height="50" alt="Rigo" />
       </Link>
       <div className="ml-auto d-flex align-items-center">
-        <div className="dropdown m-2">
-          <a
+        <div className="dropdown">
+          <button
             className="btn btn-secondary dropdown-toggle"
-            href="#"
-            role="button"
+            type="button"
+            id="dropdownMenuButton1"
             data-bs-toggle="dropdown"
-            aria-expanded="true"
+            aria-expanded="false"
           >
             <i className="grupoWish fa fa-heart fa-2x"></i>{" "}
             <span className="badge bg-primary">{store.favorite.length}</span>
-          </a>
+          </button>
           <ul className="dropdown-menu" style={{ width: "200px" }}>
             {store.favorite.map((item, index) => (
               <li key={index} className="dropdown-item d-flex container">
@@ -51,10 +42,10 @@ export const Navbar = () => {
                   <div className="col-8">
                     <span className="text-primary">{item}</span>
                   </div>
-                  <div className="col-4 text-end justify-content-end">
+                  <div className="col-4 text-end">
                     <button
-                      className="border border-0 "
-                      onClick={() => actions.eliminarElementoCarrito(item)}
+                      className="border-0 bg-transparent"
+                      onClick={() => actions.borrarFavoritos(item)}
                     >
                       <i className="fa fa-solid fa-trash" />
                     </button>
@@ -80,18 +71,19 @@ export const Navbar = () => {
               <li key={item.id} className="dropdown-item d-flex container">
                 <div className="row align-items-center">
                   <div className="col-3">
-                    <img src={item.imagen} width="50" height="50" alt={item.titulo} />
+                    {item.libro && item.libro.imagen && (
+                      <img src={item.libro.imagen} width="50" height="50" alt={item.libro.titulo} />
+                    )}
                   </div>
                   <div className="col-6">
-                    <div>{item.titulo}</div>
-                    <div>Precio: {item.precio}</div>
-                    <div>Cantidad: {item.cantidad}</div>
+                    <p className="mb-1">{item.libro && item.libro.titulo}</p>
+                    <p className="mb-1">Precio: {item.precio}</p>
+                    <p className="mb-0">Cantidad: {item.quantity}</p>
                   </div>
-                  <div className="col-3 text-end justify-content-end">
+                  <div className="col-3 text-end">
                     <button
-                      className="border border-0"
-                      onClick={() => handleRemoveFromCart(item)}
-                    >
+                      className="border-0 bg-transparent"
+                      onClick={() => handleRemoveFromCart(item.id)}>
                       <i className="fa fa-solid fa-trash" />
                     </button>
                   </div>
@@ -102,13 +94,14 @@ export const Navbar = () => {
               <li className="dropdown-item text-center">El carrito está vacío</li>
             )}
             <li className="dropdown-item d-flex justify-content-between align-items-center">
-              <div>Total:</div>
-              <div>{calculateTotal()}</div>
-            </li>
-            <li className="dropdown-item text-center">
-              <Link className="btn btn-primary" to="/carrito">
-                Pagar
-              </Link>
+              <div>
+                Total: {calculateTotal()}
+              </div>
+              <div>
+                <Link className="btn btn-primary" to="/carrito">
+                  Pagar
+                </Link>
+              </div>
             </li>
           </ul>
         </div>

@@ -10,7 +10,7 @@ const CardsBooks = (props) => {
   const [cantidad, setCantidad] = useState(1);
 
   const handleAddToFavorites = () => {
-    actions.añadirFavoritos(props.titulo);
+    actions.añadirFavoritos(props);
   };
 
   const handleAddToCart = () => {
@@ -38,12 +38,12 @@ const CardsBooks = (props) => {
           <p className="card-text">Detalles:{props.detalle}</p>
           <p className="card-text">Precio: {props.precio}</p>
           <p className="card-text">Disponibles: {props.stock}</p>
-          <button 
-              data-toggle="modal"
-              className={`btn btn-primary`}
-              type="button"
-              onClick={handleAddToCart}
-              id="cartButton">
+          <button
+            data-toggle="modal"
+            className={`btn btn-primary ${isItemInCart ? 'disabled' : ''}`}
+            type="button"
+            onClick={handleAddToCart}
+            id="cartButton">
             Agregar al carrito
           </button>
 
