@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
+import { Link } from "react-router-dom";
 
 const CardsBooks = (props) => {
   const { actions, store } = useContext(Context);

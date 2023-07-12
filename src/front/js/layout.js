@@ -13,6 +13,7 @@ import {LibroCRUD } from "./pages/libroCrud.js";
 import {ForgotPassword } from "./pages/forgotPassword.js";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+import {Cart} from "./pages/cart"
 
 //create your first component
 const Layout = () => {
@@ -33,6 +34,7 @@ const Layout = () => {
                         <Route element={<Login />} path="/login" />
                         <Route element={<Private />} path="/private" />
                         <Route element={<LibroCRUD />} path="/libros" />
+                        <Route element={<Cart />} path="/carrito" />
                         <Route element={<ForgotPassword />} path="/forgot-password" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>

@@ -1,19 +1,30 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
+  const [car, setCar] = useState([]);
 
-  const rigoImageUrl = ""; 
+  const rigoImageUrl = "";
 
-  // Función para calcular el total de la compra
   const calculateTotal = () => {
     const total = store.car.reduce(
       (accumulator, item) => accumulator + item.precio * item.cantidad,
       0
     );
     return `$${total.toFixed(2)}`;
+  };
+
+  const handleRemoveFromCart = async (cartItem) => {
+    try {
+      await actions.eliminarElementoCarrito(cartItem.id);
+      const updatedCarrito = await actions.getCarrito();
+      console.log("Carrito actualizado:", updatedCarrito);
+      setCar(updatedCarrito);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -43,7 +54,7 @@ export const Navbar = () => {
                   <div className="col-4 text-end justify-content-end">
                     <button
                       className="border border-0 "
-                      onClick={() => actions.borrarFavoritos(item)}
+                      onClick={() => actions.eliminarElementoCarrito(item)}
                     >
                       <i className="fa fa-solid fa-trash" />
                     </button>
@@ -65,11 +76,11 @@ export const Navbar = () => {
             <span className="badge bg-primary">{store.car.length}</span>
           </button>
           <ul className="dropdown-menu" style={{ width: "300px" }}>
-            {store.car.map((item, index) => (
-              <li key={index} className="dropdown-item d-flex container">
+            {store.car.map((item) => (
+              <li key={item.id} className="dropdown-item d-flex container">
                 <div className="row align-items-center">
                   <div className="col-3">
-                    <img src={item.image} width="50" height="50" alt={item.titulo} />
+                    <img src={item.imagen} width="50" height="50" alt={item.titulo} />
                   </div>
                   <div className="col-6">
                     <div>{item.titulo}</div>
@@ -79,7 +90,7 @@ export const Navbar = () => {
                   <div className="col-3 text-end justify-content-end">
                     <button
                       className="border border-0"
-                      onClick={() => actions.borrarCarrito(item)}
+                      onClick={() => handleRemoveFromCart(item)}
                     >
                       <i className="fa fa-solid fa-trash" />
                     </button>
@@ -95,7 +106,9 @@ export const Navbar = () => {
               <div>{calculateTotal()}</div>
             </li>
             <li className="dropdown-item text-center">
-              <button className="btn btn-primary">Pagar</button>
+              <Link className="btn btn-primary" to="/carrito">
+                Pagar
+              </Link>
             </li>
           </ul>
         </div>

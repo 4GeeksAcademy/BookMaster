@@ -22,7 +22,7 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const loginUrl = "https://stalinnarvaez-silver-space-enigma-qjvgj5x95gxh9wqx-3001.preview.app.github.dev/api/login";
+    const loginUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev/api/login";
 
     const requestUser = {
       method: "POST",
