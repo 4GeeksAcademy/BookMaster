@@ -99,7 +99,7 @@ def protected():
 
     response_body = {
         "msg": "Usuario Logeado",
-        "user": user.serialize()  # Incluye el objeto de usuario en la respuesta
+        "logged_in_as": user.email  # Incluye el objeto de usuario en la respuesta
     }
 
     return jsonify(response_body), 200

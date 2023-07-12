@@ -23,7 +23,7 @@ export const Login = () => {
         if (user.role === "admin") {
           navigate("/vista-admin"); // Redirigir al usuario administrador a la página de libros
         } else {
-          navigate("/"); // Redirigir al usuario normal a la página principal
+          navigate("/private"); // Redirigir al usuario normal a la página principal
         }
       } else {
         console.log("Error: User object is missing in the response");

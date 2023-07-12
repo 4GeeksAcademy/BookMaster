@@ -5,7 +5,7 @@ import { Context } from "../store/appContext";
 import "../../styles/index.css";
 
 export const Private = () => {
-  const { store } = useContext(Context);
+  const { store,actions } = useContext(Context);
   const navigate = useNavigate();
 
   const [authState, setAuthState] = useState({
@@ -78,6 +78,11 @@ export const Private = () => {
     return null; // Agregamos un return null para evitar errores de renderizado
   }
 
+  const handleLogout = () => {
+    actions.logout();
+    navigate("/login");
+  };
+
   return (
     <div className="container">
       <div className="text-start mt-5">
@@ -95,6 +100,8 @@ export const Private = () => {
           ))}
         </div>
       </div>
+      
+      <button onClick={handleLogout} className="btn btn-primary">Logout</button>
     </div>
   );
 };

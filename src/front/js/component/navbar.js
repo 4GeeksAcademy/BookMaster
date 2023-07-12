@@ -78,7 +78,9 @@ export const Navbar = () => {
               <div>{actions.calculateTotal()}</div>
             </li>
             <li className="dropdown-item text-center">
-              <button className="btn btn-primary">Pagar</button>
+            <Link to="/direcciones" className="btn btn-primary">
+                Pagar
+            </Link>
             </li>
           </ul>
         </div>

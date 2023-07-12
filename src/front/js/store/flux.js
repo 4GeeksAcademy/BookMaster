@@ -59,15 +59,17 @@ const getState = ({ getStore, getActions, setStore }) => {
         return fetch(`${API_URL}/login`, requestOptions)
           .then(response => {
             if (response.status === 200) {
-              return response.json(); // Devuelve la respuesta como objeto JSON
+              return response.json();
             } else {
               throw new Error('Error occurred during login');
             }
           })
           .then(data => {
             if (data.user && data.access_token) {
-              const token = data.access_token; // Obtén el token de la respuesta
-              return { user: data.user, token: token }; // Retorna el objeto user y el token
+              const token = data.access_token;
+              // Almacena el token en el almacenamiento local
+              sessionStorage.setItem('token', token);
+              return { user: data.user, token: token };
             } else {
               throw new Error('User object or token is missing in the response');
             }
@@ -77,7 +79,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
       },
       
-  
       signup: (email, password) => {
         const requestOptions = {
           method: 'POST',
@@ -89,7 +90,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         };
       
         return fetch(`${API_URL}/signup`, requestOptions)
-          .then(response => { 
+          .then(response => {
             if (response.status === 200) {
               return response.json();
             } else {
@@ -98,7 +99,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           })
           .then(data => {
             if (data.access_token) {
-              const token = data.access_token; // Obtén el token de la respuesta
+              const token = data.access_token;
+              // Almacena el token en el almacenamiento local
+              sessionStorage.setItem('token', token);
               // Realiza las acciones necesarias con el token
               console.log(`Token: ${token}`);
             } else {
@@ -389,14 +392,14 @@ deleteDireccion: async id => {
 },
 
       
-      calculateTotal: () => {
-        const store = getStore();
-        const total = store.car.reduce(
-          (accumulator, item) => accumulator + item.precio * item.cantidad,
-          0
-        );
-        return `$${total.toFixed(2)}`;
-      },
+calculateTotal: () => {
+  const store = getStore();
+  const total = store.car.reduce(
+    (accumulator, item) => accumulator + item.precio * item.cantidad,
+    0
+  );
+  return `$${total.toFixed(2)}`;
+},
 
       // añadirCarrito: async carritoItem => {
       //    try {
