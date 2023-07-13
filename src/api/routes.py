@@ -99,7 +99,7 @@ def protected():
 
     response_body = {
         "msg": "Usuario Logeado",
-        "user": user.serialize()  # Incluye el objeto de usuario en la respuesta
+        "logged_in_as": user.email  # Incluye el objeto de usuario en la respuesta
     }
 
     return jsonify(response_body), 200
@@ -143,6 +143,7 @@ def update_libro(libro_id):
         return jsonify(libro.serialize()), 200
     else:
         return jsonify({'message': 'Libro not found'}), 404
+
 @api.route('/libros/<int:libro_id>', methods=['DELETE'])
 def delete_libro(libro_id):
     libro = Libro.query.get(libro_id)
@@ -161,100 +162,81 @@ def get_cart_items():
     serialized_cart_items = [cart_item.serialize() for cart_item in cart_items]
     return jsonify(serialized_cart_items), 200
 
-
 @api.route('/cart', methods=['POST'])
 def create_cart():
-    try:
-        cart_items = request.get_json()  # Obtener los elementos del carrito del cuerpo de la solicitud
-
-        # Procesar los elementos del carrito y guardarlos en la base de datos
-        for item in cart_items:
-            libro_id = item.get('libro_id')
-            user_id = item.get('user_id')
-            quantity = item.get('cantidad')
-
-            libro = Libro.query.get(libro_id)
-            user = User.query.get(user_id)
-
-            if libro and user:
-                cart_item = CartItem(libro=libro, user=user, quantity=quantity)
-                db.session.add(cart_item)
-
+    libro_id = request.json.get('libro_id')
+    user_id = request.json.get('user_id')
+    quantity = request.json.get('quantity')
+    libro = Libro.query.get(libro_id)
+    user = User.query.get(user_id)
+    if libro and user:
+        cart_item = CartItem(libro=libro, user=user, quantity=quantity)
+        db.session.add(cart_item)
         db.session.commit()
-        return jsonify({'message': 'Cart created successfully'}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'message': 'Error creating cart', 'error': str(e)}), 500
-
-
+        return jsonify(cart_item.serialize()), 201
+    else:
+        return jsonify({'message': 'Libro or User not found'}), 404
+    
 @api.route('/cart/<int:cart_item_id>', methods=['DELETE'])
 def delete_cart_item(cart_item_id):
     cart_item = CartItem.query.get(cart_item_id)
-
     if cart_item:
         db.session.delete(cart_item)
         db.session.commit()
-
         return jsonify({'message': 'Cart item deleted'}), 200
     else:
         return jsonify({'message': 'Cart item not found'}), 404
-
-
+    
 @api.route('/cart/<int:cart_item_id>', methods=['PUT'])
 def update_cart_item(cart_item_id):
     cart_item = CartItem.query.get(cart_item_id)
     quantity = request.json.get('quantity')
-
     if cart_item:
         cart_item.quantity = quantity
         db.session.commit()
-
         return jsonify(cart_item.serialize()), 200
     else:
         return jsonify({'message': 'Cart item not found'}), 404
-
     
 @api.route('/direcciones', methods=['GET'])
 def get_direcciones():
     direcciones = Direccion.query.all()
     serialized_direcciones = [direccion.to_dict() for direccion in direcciones]
     return jsonify(serialized_direcciones), 200
-
-
 @api.route('/direcciones', methods=['POST'])
 def create_direccion():
-    direccion_data = request.get_json()
-    direccion = Direccion(direccion=direccion_data['direccion'],
-                          ciudad=direccion_data['ciudad'],
-                          pais=direccion_data['pais'])
-    db.session.add(direccion)
-    db.session.commit()
-    return jsonify(direccion.to_dict()), 201
-
-
+    user_id = request.json.get('user_id')
+    calle = request.json.get('calle')
+    pais = request.json.get('pais')
+    ciudad = request.json.get('ciudad')
+    user = User.query.get(user_id)
+    if user:
+        nueva_direccion = Direccion(pais=pais, ciudad=ciudad, calle=calle, user=user)
+        db.session.add(nueva_direccion)
+        db.session.commit()
+        return jsonify(nueva_direccion.to_dict()), 201
+    else:
+        # Handle the case where user is not found
+        return jsonify({'error': 'User not found'}), 404
 @api.route('/direcciones/<int:direccion_id>', methods=['GET'])
 def get_direccion(direccion_id):
     direccion = Direccion.query.get(direccion_id)
     if direccion:
-        return jsonify(direccion.to_dict())
+        return jsonify(direccion.to_dict()), 200
     else:
         return jsonify({'error': 'Dirección no encontrada'}), 404
-
-
 @api.route('/direcciones/<int:direccion_id>', methods=['PUT'])
 def update_direccion(direccion_id):
     direccion_data = request.get_json()
     direccion = Direccion.query.get(direccion_id)
     if direccion:
-        direccion.direccion = direccion_data['direccion']
-        direccion.ciudad = direccion_data['ciudad']
-        direccion.pais = direccion_data['pais']
+        direccion.calle = direccion_data.get('calle', direccion.calle)
+        direccion.ciudad = direccion_data.get('ciudad', direccion.ciudad)
+        direccion.pais = direccion_data.get('pais', direccion.pais)
         db.session.commit()
-        return jsonify(direccion.to_dict())
+        return jsonify(direccion.to_dict()), 200
     else:
         return jsonify({'error': 'Dirección no encontrada'}), 404
-
-
 @api.route('/direcciones/<int:direccion_id>', methods=['DELETE'])
 def delete_direccion(direccion_id):
     direccion = Direccion.query.get(direccion_id)

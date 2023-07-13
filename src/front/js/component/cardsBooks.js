@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
 import { Link } from "react-router-dom";
-
 const CardsBooks = (props) => {
   const { actions, store } = useContext(Context);
   const isItemInCart = store.car.some(item => item.titulo === props.titulo);
@@ -14,28 +13,20 @@ const CardsBooks = (props) => {
   };
 
   const handleAddToCart = () => {
-
     actions.añadirCarrito(props.id, props.titulo, props.precio, cantidad); // Pasamos el ID y la cantidad seleccionada
-
-    actions.añadirCarrito(props.titulo, props.precio, cantidad); // Pasamos la cantidad seleccionada
-    actions.sendCartData(store.car); // Enviamos el carrito completo al backend
-
   };
-
   const handleIncreaseQuantity = () => {
     setCantidad(cantidad + 1);
   };
-
   const handleDecreaseQuantity = () => {
     if (cantidad > 1) {
       setCantidad(cantidad - 1);
     }
   };
-
   return (
     <div className="card-group">
       <div className="card" style={{ maxWidth: "350px" }}>
-        <img src={props.imagen} className="card-img-top" alt="..." />
+        <img src={rigoImageUrl} className="card-img-top" alt="..." />
         <div className="card-body">
           <h5 className="card-title">Titulo: {props.titulo}</h5>
           <p className="card-text">Autor: {props.autor}</p>
@@ -79,5 +70,4 @@ const CardsBooks = (props) => {
     </div>
   );
 };
-
 export default CardsBooks;

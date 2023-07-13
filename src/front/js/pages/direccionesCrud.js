@@ -6,9 +6,10 @@ import '../../styles/direccionesCrud.css';
 export const DireccionesCrud = () => {
   const { store, actions } = useContext(Context);
   const [direcciones, setDirecciones] = useState([]);
-  const [direccion, setDireccion] = useState("");
+  const [calle, setCalle] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [pais, setPais] = useState("");
+  const [editId, setEditId] = useState(null); // ID de la dirección en modo de edición
 
   useEffect(() => {
     // Cargar las direcciones al iniciar el componente
@@ -16,12 +17,7 @@ export const DireccionesCrud = () => {
   }, [actions]);
 
   const handleAddDireccion = () => {
-    const newDireccion = {
-      direccion: direccion,
-      ciudad: ciudad,
-      pais: pais
-    };
-    actions.addDireccion(newDireccion)
+    actions.añadirDireccion(calle, ciudad, pais)
       .then(() => {
         // Actualizar las direcciones después de agregar una nueva
         actions.getDirecciones();
@@ -29,23 +25,19 @@ export const DireccionesCrud = () => {
       .catch(error => {
         console.log("Error al agregar la dirección", error);
       });
-
+  
     // Limpiar los campos de entrada
-    setDireccion("");
+    setCalle("");
     setCiudad("");
     setPais("");
   };
 
-  const handleEditDireccion = (id, direccion, ciudad, pais) => {
-    const updatedDireccion = {
-      direccion: direccion,
-      ciudad: ciudad,
-      pais: pais
-    };
-    actions.editDireccion(id, updatedDireccion)
+  const handleEditDireccion = (id, direccion) => {
+    actions.editDireccion(id, direccion)
       .then(() => {
         // Actualizar las direcciones después de editar
         actions.getDirecciones();
+        setEditId(null); // Salir del modo de edición
       })
       .catch(error => {
         console.log("Error al editar la dirección", error);
@@ -69,25 +61,40 @@ export const DireccionesCrud = () => {
   }, [store.direcciones]);
 
   const renderDirecciones = () => {
+   
     return direcciones.map(direccion => (
+      
       <tr key={direccion.id}>
         <td>{direccion.direccion}</td>
         <td>{direccion.ciudad}</td>
         <td>{direccion.pais}</td>
         <td>
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() =>
-              handleEditDireccion(
-                direccion.id,
-                direccion.direccion,
-                direccion.ciudad,
-                direccion.pais
-              )
-            }
-          >
-            Editar
-          </button>
+          {editId === direccion.id ? (
+            <button
+              className="btn btn-sm btn-success"
+              onClick={() =>
+                handleEditDireccion(direccion.id, {
+                  calle: calle,
+                  ciudad: ciudad,
+                  pais: pais
+                })
+              }
+            >
+              Guardar
+            </button>
+          ) : (
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => {
+                setEditId(direccion.id);
+                setCalle(direccion.direccion);
+                setCiudad(direccion.ciudad);
+                setPais(direccion.pais);
+              }}
+            >
+              Editar
+            </button>
+          )}
           <button
             className="btn btn-sm btn-danger"
             onClick={() => handleDeleteDireccion(direccion.id)}
@@ -105,7 +112,7 @@ export const DireccionesCrud = () => {
       <table className="table">
         <thead>
           <tr>
-            <th>Dirección</th>
+            <th>Calle</th>
             <th>Ciudad</th>
             <th>País</th>
             <th>Acciones</th>
@@ -116,11 +123,11 @@ export const DireccionesCrud = () => {
       <div>
         <h3>Agregar Dirección</h3>
         <div>
-          <label>Dirección:</label>
+          <label>Calle:</label>
           <input
             type="text"
-            value={direccion}
-            onChange={e => setDireccion(e.target.value)}
+            value={calle}
+            onChange={e => setCalle(e.target.value)}
           />
         </div>
         <div>
@@ -144,14 +151,13 @@ export const DireccionesCrud = () => {
         </button>
       </div>
       <div>
-  <span style={{ display: 'block' }}>
-    <Link to="/">Volver</Link>
-  </span>
-  <span style={{ display: 'block' }}>
-    <Link to="/checkout">Checkout</Link>
-  </span>
-</div>
-
+        <span style={{ display: 'block' }}>
+          <Link to="/">Volver</Link>
+        </span>
+        <span style={{ display: 'block' }}>
+          <Link to="/checkout">Checkout</Link>
+        </span>
+      </div>
     </div>
   );
 };

@@ -2,11 +2,8 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
-
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
-
-
   const calculateTotal = () => {
     const total = store.car.reduce(
       (accumulator, item) => accumulator + item.precio * item.quantity,
@@ -14,21 +11,15 @@ export const Navbar = () => {
     );
     return `$${total.toFixed(2)}`;
   };
-
-  const rigoImageUrl = "";
-
-
   const handleRemoveFromCart = (itemId) => {
     actions.eliminarElementoCarrito(itemId);
   };
-
   return (
     <nav className="navbar navbar-light bg-light mb-3">
       <Link to="/" className="m-2">
         <img src={rigoImageUrl} width="70" height="50" alt="Rigo" />
       </Link>
       <div className="ml-auto d-flex align-items-center">
-
         <div className="dropdown">
           <button
             className="btn btn-secondary dropdown-toggle"
@@ -59,19 +50,8 @@ export const Navbar = () => {
               </li>
             ))}
           </ul>
-
-        <a className="btn btn-success m-2" href="/signup" role="button">
-          Signup
-        </a>
-        <a className="btn btn-primary m-2" href="/login" role="button">
-          Login
-        </a>
-        <div className="dropdown m-2">
-          {/* Dropdown de favoritos */}
-
         </div>
         <div className="dropdown">
-          {/* Dropdown de carrito */}
           <button
             className="btn btn-secondary dropdown-toggle"
             type="button"
@@ -98,27 +78,8 @@ export const Navbar = () => {
                   </div>
                   <div className="col-3 text-end">
                     <button
-
                       className="border-0 bg-transparent"
                       onClick={() => handleRemoveFromCart(item.id)}>
-
-                      className="border border-0"
-                      onClick={() => actions.disminuirCantidad(item.titulo)}
-                    >
-                      -
-                    </button>
-                    <span className="mx-2">{item.cantidad}</span>
-                    <button
-                      className="border border-0"
-                      onClick={() => actions.aumentarCantidad(item.titulo)}
-                    >
-                      +
-                    </button>
-                    <button
-                      className="border border-0"
-                      onClick={() => actions.borrarCarrito(item)}
-                    >
-
                       <i className="fa fa-solid fa-trash" />
                     </button>
                   </div>
@@ -129,7 +90,6 @@ export const Navbar = () => {
               <li className="dropdown-item text-center">El carrito está vacío</li>
             )}
             <li className="dropdown-item d-flex justify-content-between align-items-center">
-
               <div>
                 Total: {calculateTotal()}
               </div>
@@ -138,12 +98,6 @@ export const Navbar = () => {
                   Pagar
                 </Link>
               </div>
-              <div>Total:</div>
-              <div>{actions.calculateTotal()}</div>
-            </li>
-            <li className="dropdown-item text-center">
-              <button className="btn btn-primary">Pagar</button>
-
             </li>
           </ul>
         </div>
@@ -151,3 +105,9 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+
+
+
+
+

@@ -61,12 +61,10 @@ class CartItem(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref='cart_items')
     quantity = db.Column(db.Integer, nullable=False)
-
     def __init__(self, libro, user, quantity):
         self.libro = libro
         self.user = user
         self.quantity = quantity
-
     def serialize(self):
         serialized_data = {
             "id": self.id,
@@ -78,22 +76,24 @@ class CartItem(db.Model):
         }
         if hasattr(self.libro, 'precio'):
             serialized_data["precio"] = self.libro.precio
-
         return serialized_data
+
 
 class Direccion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    direccion = db.Column(db.String(255), nullable=False)
+    calle = db.Column(db.String(255), nullable=False)
     ciudad = db.Column(db.String(100), nullable=False)
     pais = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref='direccion')
 
     def to_dict(self):
         return {
             'id': self.id,
-            'direccion': self.direccion,
+            'direccion': self.calle,
             'ciudad': self.ciudad,
             'pais': self.pais,
+            "user": self.user.serialize() if self.user else None
         }
 
-        return serialized_data
 

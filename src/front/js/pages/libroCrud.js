@@ -1,10 +1,10 @@
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext,useEffect } from 'react';
 import { Context } from '../store/appContext';
 import '../../styles/librosCrud.css';
 
 export const LibroCRUD = ({ onLibroIdChange }) => {
-  const { store, actions } = useContext(Context);
+  
 
 
   const [libros, setLibros] = useState([]);

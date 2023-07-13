@@ -12,32 +12,6 @@ export const Login = () => {
 
   const sendData = async (e) => {
     e.preventDefault();
-
-
-    const loginUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev/api/login";
-
-    const requestUser = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: inputVal.email,
-        password: inputVal.password
-      })
-    };
-
-    const resp = await fetch(loginUrl, requestUser).catch(() => false);
-    if (!resp) return window.alert("There's been a problem with the request");
-
-    const jsonResp = await resp.json();
-    if ([400, 401, 402, 403].includes(resp.status))
-      return window.alert(jsonResp.msg);
-
-    console.log("response: ", jsonResp);
-
-    if (resp.status === 201) {
-      window.sessionStorage.setItem("token", jsonResp.token);
-      navigate("/private");
-
     console.log("send Data");
     console.log(email, password);
 
@@ -47,16 +21,15 @@ export const Login = () => {
 
       if (user) {
         if (user.role === "admin") {
-          navigate("/libros"); // Redirigir al usuario administrador a la página de libros
+          navigate("/vista-admin"); // Redirigir al usuario administrador a la página de libros
         } else {
-          navigate("/"); // Redirigir al usuario normal a la página principal
+          navigate("/private"); // Redirigir al usuario normal a la página principal
         }
       } else {
         console.log("Error: User object is missing in the response");
       }
     } catch (error) {
       console.log("Error occurred during login:", error);
-
     }
   };
 

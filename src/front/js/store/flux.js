@@ -1,6 +1,6 @@
 
 
-const API_URL = "https://tomasventura17-studious-fiesta-pvv6q4xq95xhrv4w-3001.preview.app.github.dev/api";
+const API_URL = "https://tomasventura17-reimagined-dollop-qrrxgjwgxpwfxxx7-3001.preview.app.github.dev/api";
 
 
 const getState = ({ getStore, getActions, setStore }) => {
@@ -16,7 +16,7 @@ const getState = ({ getStore, getActions, setStore }) => {
     },
     actions: {
 
-      añadirCarrito: async (id, titulo, precio, cantidad) => {
+      
 
       logout: () => {
         console.log("logout")
@@ -37,15 +37,17 @@ const getState = ({ getStore, getActions, setStore }) => {
         return fetch(`${API_URL}/login`, requestOptions)
           .then(response => {
             if (response.status === 200) {
-              return response.json(); // Devuelve la respuesta como objeto JSON
+              return response.json();
             } else {
               throw new Error('Error occurred during login');
             }
           })
           .then(data => {
             if (data.user && data.access_token) {
-              const token = data.access_token; // Obtén el token de la respuesta
-              return { user: data.user, token: token }; // Retorna el objeto user y el token
+              const token = data.access_token;
+              // Almacena el token en el almacenamiento local
+              sessionStorage.setItem('token', token);
+              return { user: data.user, token: token };
             } else {
               throw new Error('User object or token is missing in the response');
             }
@@ -54,8 +56,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             throw new Error(`Error occurred during login: ${error.message}`);
           });
       },
-      
-  
+
       signup: (email, password) => {
         const requestOptions = {
           method: 'POST',
@@ -65,9 +66,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             password: password
           })
         };
-      
+
         return fetch(`${API_URL}/signup`, requestOptions)
-          .then(response => { 
+          .then(response => {
             if (response.status === 200) {
               return response.json();
             } else {
@@ -76,7 +77,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           })
           .then(data => {
             if (data.access_token) {
-              const token = data.access_token; // Obtén el token de la respuesta
+              const token = data.access_token;
+              // Almacena el token en el almacenamiento local
+              sessionStorage.setItem('token', token);
               // Realiza las acciones necesarias con el token
               console.log(`Token: ${token}`);
             } else {
@@ -87,125 +90,108 @@ const getState = ({ getStore, getActions, setStore }) => {
             throw new Error(`Error occurred during signup: ${error.message}`);
           });
       },
-      añadirCarrito: async (titulo, precio, cantidad) => {
-
+      añadirCarrito: async (id, titulo, precio, cantidad) => {
         const store = getStore();
         const isItemInCart = store.car.some(item => item.titulo === titulo);
-
         if (!isItemInCart) {
           const newItem = {
-            id: id,
-            titulo: titulo,
-            precio: precio,
-            cantidad: cantidad,
-          };
-          const updatedCart = [...store.car, newItem];
-          setStore({ car: updatedCart });
-      
-          try {
-            const response = await fetch(`${API_URL}/cart`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-
-                libro_id: newItem.id,
-                user_id: 1,
-                quantity: newItem.cantidad
-
-              })
-            });
-      
-            if (response.ok) {
-              // El elemento se agregó correctamente al carrito de compras en la base de datos
-              getActions().getCarrito(); // Obtener los datos actualizados del carrito
-            } else {
-              console.log("Error al agregar el elemento al carrito de compras en la base de datos");
-            }
-          } catch (error) {
-            console.log(
-              "Error al realizar la solicitud POST al agregar el elemento al carrito de compras",
-              error
-            );
-          }
-        }
-      },
-
-      getCarrito: async () => {
-        try {
-          const response = await fetch(`${API_URL}/cart`);
+          id: id,
+          titulo: titulo,
+          precio: precio,
+          cantidad: cantidad,
+         };
+         const updatedCart = [...store.car, newItem];
+         setStore({ car: updatedCart });
+         try {
+          const response = await fetch(`${API_URL}/cart`, {
+           method: "POST",
+           headers: {
+            "Content-Type": "application/json"
+           },
+           body: JSON.stringify({
+            libro_id: newItem.id,
+            user_id: 1,
+            quantity: newItem.cantidad
+           })
+          });
           if (response.ok) {
-            const data = await response.json();
-            console.log("Datos del carrito:", data); // Imprime los datos en la consola
-
-            // Verificar la estructura de los datos del carrito
-            data.forEach(item => {
-              console.log(item.libro);
-            });
-
-            // Actualiza el estado del carrito en el contexto
-            setStore({ car: data });
-
-            return data;
+           // El elemento se agregó correctamente al carrito de compras en la base de datos
+           getActions().getCarrito(); // Obtener los datos actualizados del carrito
           } else {
-            throw new Error("Error al obtener el carrito");
+           console.log("Error al agregar el elemento al carrito de compras en la base de datos");
           }
-        } catch (error) {
-          console.log("Error al obtener el carrito", error);
+         } catch (error) {
+          console.log(
+           "Error al realizar la solicitud POST al agregar el elemento al carrito de compras",
+           error
+          );
+         }
+        }
+       },
+       getCarrito: async () => {
+        try {
+         const response = await fetch(`${API_URL}/cart`);
+         if (response.ok) {
+          const data = await response.json();
+          console.log("Datos del carrito:", data); // Imprime los datos en la consola
+          // Verificar la estructura de los datos del carrito
+          data.forEach(item => {
+           console.log(item.libro);
+          });
+          // Actualiza el estado del carrito en el contexto
+          setStore({ car: data });
+          return data;
+         } else {
           throw new Error("Error al obtener el carrito");
-        }
-
-      
-    
-      borrarCarrito: item => {
-        const store = getStore();
-        const updatedCart = store.car.filter(el => el.titulo !== item.titulo);
-        setStore({ car: updatedCart });
-      },
-      eliminarElementoCarrito: async (cartItemId) => {
-        try {
-          console.log("ID del elemento a eliminar:", cartItemId); // Verificar el ID antes de eliminar
-
-          const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
-            method: "DELETE",
-          });
-          if (response.ok) {
-            // Elemento del carrito eliminado correctamente
-            const store = getStore();
-            const updatedCarrito = store.car.filter(item => item.id !== cartItemId);
-            setStore({ car: updatedCarrito });
-          } else {
-            console.log("Error al eliminar el elemento del carrito");
-          }
+         }
         } catch (error) {
-          console.log("Error al realizar la solicitud DELETE para eliminar el elemento del carrito", error);
+         console.log("Error al obtener el carrito", error);
+         throw new Error("Error al obtener el carrito");
         }
-      },
-      editarCarrito: async (cartItemId, cartItem) => {
+       },
+       eliminarElementoCarrito: async (cartItemId) => {
         try {
-          const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(cartItem)
-          });
-      
-          if (response.ok) {
-            const data = await response.json();
-            const store = getStore();
-            const updatedCartItems = store.carrito.map(item => (item.id === cartItemId ? data : item));
-            setStore({ carrito: updatedCartItems });
-          } else {
-            throw new Error("Error al editar el carrito");
-          }
+         console.log("ID del elemento a eliminar:", cartItemId); // Verificar el ID antes de eliminar
+         const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
+          method: "DELETE",
+         });
+         if (response.ok) {
+          // Elemento del carrito eliminado correctamente
+          const store = getStore();
+          const updatedCarrito = store.car.filter(item => item.id !== cartItemId);
+          setStore({ car: updatedCarrito });
+         } else {
+          console.log("Error al eliminar el elemento del carrito");
+         }
         } catch (error) {
-          console.log("Error al editar el carrito", error);
+         console.log("Error al realizar la solicitud DELETE para eliminar el elemento del carrito", error);
+        }
+       },
+       editarCarrito: async (cartItemId, cartItem) => {
+        try {
+         console.log("ID del carrito a editar:", cartItemId);
+         console.log("Valor de quantity:", cartItem.quantity);
+         const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
+          method: "PUT",
+          headers: {
+           "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ quantity: cartItem.quantity })
+         });
+         if (response.ok) {
+          const data = await response.json();
+          const store = getStore();
+          const updatedCartItems = store.car.map(item => (item.id === cartItemId ? data : item));
+          setStore({ carrito: updatedCartItems });
+         } else {
           throw new Error("Error al editar el carrito");
+         }
+        } catch (error) {
+         console.log("Error al editar el carrito", error);
+         throw new Error("Error al editar el carrito");
         }
-      },      
-      
+       },
+
       setCartItemId: (cartItemId) => {
         setStore({ cartItemId: cartItemId });
       },
@@ -352,20 +338,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
        
 
-      // getCarrito: async () => {
-      //   try {
-      //     const response = await fetch(`${API_URL}/cart`);
-      //     if (response.ok) {
-      //       const data = await response.json();
-      //       return data;
-      //     } else {
-      //       throw new Error("Error al obtener el carrito");
-      //     }
-      //   } catch (error) {
-      //     console.log("Error al obtener el carrito", error);
-      //     throw new Error("Error al obtener el carrito");
-      //   }
-      // },
+    
       sendCartData: async () => {
         try {
           const store = getStore();
@@ -401,19 +374,26 @@ getDirecciones: async () => {
   }
 },
 
-addDireccion: async direccion => {
+añadirDireccion: async (calle, ciudad, pais) => {
+  const newDireccion = {
+    user_id: 1,
+    calle: calle,
+    ciudad: ciudad,
+    pais: pais
+  };
   try {
     const response = await fetch(`${API_URL}/direcciones`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(direccion)
+      body: JSON.stringify(newDireccion)
     });
+
     if (response.ok) {
-      const data = await response.json();
+      const responseData = await response.json();
       const store = getStore();
-      const updatedDirecciones = [...store.direcciones, data];
+      const updatedDirecciones = [...store.direcciones, { ...responseData }];
       setStore({ direcciones: updatedDirecciones });
     }
   } catch (error) {
@@ -466,64 +446,7 @@ deleteDireccion: async id => {
         return `$${total.toFixed(2)}`;
       },
 
-      // añadirCarrito: async carritoItem => {
-      //    try {
-      //      const response = await fetch(`${API_URL}/cart`, {
-      //        method: "POST",
-      //        headers: {
-      //          "Content-Type": "application/json"
-      //        },
-      //        body: JSON.stringify(carritoItem)
-      //      });
-      //      if (response.ok) {
-      //        const data = await response.json();
-      //        return data;
-      //      } else {
-      //        throw new Error("Error al añadir al carrito");
-      //      }
-      //    } catch (error) {
-      //      console.log("Error al añadir al carrito", error);
-      //      throw new Error("Error al añadir al carrito");
-      //    }
-      //  },
 
-      // borrarCarrito: async carritoItemId => {
-      //   try {
-      //     const response = await fetch(`${API_URL}/cart/${carritoItemId}`, {
-      //       method: "DELETE"
-      //     });
-      //     if (response.ok) {
-      //       return true;
-      //     } else {
-      //       throw new Error("Error al borrar del carrito");
-      //     }
-      //   } catch (error) {
-      //     console.log("Error al borrar del carrito", error);
-      //     throw new Error("Error al borrar del carrito");
-      //   }
-      // },
-
-      // editarCarrito: async (carritoItemId, carritoItem) => {
-      //   try {
-      //     const response = await fetch(`${API_URL}/cart/${carritoItemId}`, {
-      //       method: "PUT",
-      //       headers: {
-      //         "Content-Type": "application/json"
-      //       },
-      //       body: JSON.stringify(carritoItem)
-      //     });
-      //     if (response.ok) {
-      //       const data = await response.json();
-      //       return data;
-      //     } else {
-      //       throw new Error("Error al editar el carrito");
-      //     }
-      //   } catch (error) {
-      //     console.log("Error al editar el carrito", error);
-      //     throw new Error("Error al editar el carrito");
-      //   }
-      // }
->
     }
   };
 };
