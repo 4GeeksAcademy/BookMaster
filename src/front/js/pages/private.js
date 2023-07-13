@@ -15,7 +15,7 @@ export const Private = () => {
   });
 
   const checkUser = async (token) => {
-    const checkApiUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev//api/private";
+    const checkApiUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev/api/private";
 
     const requestAuth = {
       method: "GET",

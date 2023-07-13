@@ -3,15 +3,22 @@ import { Context } from "../store/appContext";
 
 export const Cart = () => {
   const { store, actions } = useContext(Context);
-  const [inputValue, setInputValue] = useState(1);
+  const [inputValues, setInputValues] = useState([]);
 
-  useEffect(() => {
-    actions.getCarrito();
-  }, []);
+    useEffect(() => {
+      actions.getCarrito();
+    }, []);
+    
+    useEffect(() => {
+      if (store.car && store.car.length > 0) {
+        setInputValues(store.car.map(item => item.quantity));
+      }
+    }, [store.car]);
 
-  const handleEditCart = (itemId, item) => {
+  const handleEditCart = (itemId, index, item) => {
+    const inputValue = inputValues[index];
     if (inputValue <= item.stock) {
-      actions.editarCarrito(itemId, { ...item, cantidad: inputValue });
+      actions.editarCarrito(itemId, { ...item, quantity: parseInt(inputValue) });
     } else {
       alert(`Solo se puede agregar hasta ${item.stock} libros al carrito`);
     }
@@ -21,29 +28,30 @@ export const Cart = () => {
     actions.eliminarElementoCarrito(itemId);
   };
 
+  const handleInputChange = (index, value) => {
+    const newInputValues = [...inputValues];
+    newInputValues[index] = value;
+    setInputValues(newInputValues);
+  };
+
   return (
-    <div>
+    <>
       <h1>Carrito de Compras</h1>
-        {store.car.map((item, index) => (
-          <div key={index}>
-            <img src={item.libro.imagen} alt={item.libro.titulo} />
-            <p>{item.libro.titulo}</p>
-            <p>Precio: {item.precio}</p>
-            <p>Cantidad: {item.quantity}</p> 
-            <p>Disponible en Stock: {item.stock}</p>
-            <input
-              type="number"
-              value={inputValue}
-              onChange={(e) => setInputValue(parseInt(e.target.value))}
-            />
-            <button onClick={() => handleEditCart(item.id, item)}>
-              Editar cantidad
-            </button>
-            <button onClick={() => handleRemoveFromCart(item.id)}>
-              Eliminar del Carrito
-            </button>
-          </div>
-        ))}
-    </div>
+      {store.car.map((item, index) => (
+        <div key={index}>
+          <h3>{item.libro.titulo}</h3>
+          <p>Precio: {item.precio}</p>
+          <p>Cantidad: {item.quantity}</p>
+          <p>Disponible en Stock: {item.stock}</p>
+          <input
+            type="number"
+            value={inputValues[index] || ""} // Asegurar que el valor inicial sea una cadena vacía
+            onChange={(e) => handleInputChange(index, e.target.value)}
+          />
+          <button onClick={() => handleEditCart(item.id, index, item)}>Editar cantidad</button>
+          <button onClick={() => handleRemoveFromCart(item.id)}>Eliminar del Carrito</button>
+        </div>
+      ))}
+    </>
   );
 };

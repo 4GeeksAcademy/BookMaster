@@ -95,18 +95,19 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       editarCarrito: async (cartItemId, cartItem) => {
         try {
+          console.log("ID del carrito a editar:", cartItemId);
+          console.log("Valor de quantity:", cartItem.quantity);
           const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify(cartItem)
+            body: JSON.stringify({ quantity: cartItem.quantity })
           });
-      
           if (response.ok) {
             const data = await response.json();
             const store = getStore();
-            const updatedCartItems = store.carrito.map(item => (item.id === cartItemId ? data : item));
+            const updatedCartItems = store.car.map(item => (item.id === cartItemId ? data : item));
             setStore({ carrito: updatedCartItems });
           } else {
             throw new Error("Error al editar el carrito");
@@ -115,11 +116,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error al editar el carrito", error);
           throw new Error("Error al editar el carrito");
         }
-      },      
-      
-      setCartItemId: (cartItemId) => {
-        setStore({ cartItemId: cartItemId });
       },
+      
+      // setCartItemId: (cartItemId) => {
+      //   setStore({ cartItemId: cartItemId });
+      // },
+
       aumentarCantidad: titulo => {
         const store = getStore();
         const updatedCart = store.car.map(item => {
