@@ -5,15 +5,15 @@ export const Cart = () => {
   const { store, actions } = useContext(Context);
   const [inputValues, setInputValues] = useState([]);
 
-    useEffect(() => {
-      actions.getCarrito();
-    }, []);
-    
-    useEffect(() => {
-      if (store.car && store.car.length > 0) {
-        setInputValues(store.car.map(item => item.quantity));
-      }
-    }, [store.car]);
+  useEffect(() => {
+    actions.getCarrito();
+  }, []);
+
+  useEffect(() => {
+    if (store.car && store.car.length > 0) {
+      setInputValues(store.car.map(item => item.quantity));
+    }
+  }, [store.car]);
 
   const handleEditCart = (itemId, index, item) => {
     const inputValue = inputValues[index];
@@ -45,7 +45,7 @@ export const Cart = () => {
           <p>Disponible en Stock: {item.stock}</p>
           <input
             type="number"
-            value={inputValues[index] || ""} // Asegurar que el valor inicial sea una cadena vacía
+            value={inputValues[index] || ""}
             onChange={(e) => handleInputChange(index, e.target.value)}
           />
           <button onClick={() => handleEditCart(item.id, index, item)}>Editar cantidad</button>

@@ -49,25 +49,31 @@ const CardsBooks = (props) => {
 
           <div className="card-footer">
             <small className="text-secondary">
-              <span>
-                <button
-                  data-toggle="modal"
-                  className="btn btn-light btn-lg position-absolute top-0 start-0"
-                  type="button"
+              <span>{isItemInFavorites ? "Favorito" : "No favorito"}</span>
+              {!isItemInFavorites && (
+                <i
+                  className="fa fa-heart"
+                  style={{ cursor: "pointer", marginLeft: "5px" }}
                   onClick={handleAddToFavorites}
-                >
-                  <i
-                    className={`grupoWish fa fa-heart fa-2x ${isItemInFavorites ? 'text-danger' : 'text-secondary'}`}
-                    style={{ color: isItemInFavorites ? 'red' : 'gray' }}
-                  ></i>
-                </button>
-              </span>
+                />
+              )}
             </small>
-            <div className="mt-2">
-              <button className="btn btn-sm btn-primary me-1" onClick={handleDecreaseQuantity}>-</button>
-              <button className="btn btn-sm btn-primary ms-1" onClick={handleIncreaseQuantity}>+</button>
-              <span className="mx-2">Cantidad: {cantidad}</span>
+          </div>
+          <div className="card-footer">
+            <div className="btn-group" role="group">
+              <button type="button" className="btn btn-secondary" onClick={handleDecreaseQuantity}>
+                -
+              </button>
+              <input type="text" className="form-control" value={cantidad} readOnly />
+              <button type="button" className="btn btn-secondary" onClick={handleIncreaseQuantity}>
+                +
+              </button>
             </div>
+          </div>
+          <div className="card-footer">
+            <Link to={"/detalle/" + props.id} className="btn btn-info">
+              Ver detalle
+            </Link>
           </div>
         </div>
       </div>

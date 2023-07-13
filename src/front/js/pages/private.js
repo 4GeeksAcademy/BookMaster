@@ -15,7 +15,7 @@ export const Private = () => {
   });
 
   const checkUser = async (token) => {
-    const checkApiUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev/api/private";
+    const checkApiUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev//api/private";
 
     const requestAuth = {
       method: "GET",
@@ -66,8 +66,6 @@ export const Private = () => {
     userAuth();
   }, []);
 
-  console.log(authState);
-
   if (!authState.userAuth && authState.loading) {
     return <h1>... loading</h1>;
   }
@@ -75,7 +73,7 @@ export const Private = () => {
   if (!authState.userAuth && !authState.loading) {
     window.alert("Login again");
     navigate("/login");
-    return null; // Agregamos un return null para evitar errores de renderizado
+    return null;
   }
 
   return (
@@ -85,7 +83,7 @@ export const Private = () => {
         <div className="d-flex text-center mt-5 tarjetasPersonaje">
           {store.libros.map((libro, index) => (
             <CardsBooks
-              key={index + 1}
+              key={libro.id}
               id={libro.id}
               titulo={libro.titulo}
               autor={libro.autor}

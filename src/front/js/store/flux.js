@@ -1,13 +1,9 @@
-
-
 const API_URL = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev/api";
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
-
       libros: [],
-
       usuarios: [],
       car: [],
       favorite: [],
@@ -15,12 +11,11 @@ const getState = ({ getStore, getActions, setStore }) => {
     },
     actions: {
       logout: () => {
-        console.log("logout")
-        setStore({auth: false})
+        console.log("logout");
+        setStore({ auth: false });
         localStorage.removeItem("token");
       },
-  
-      login: (email, password) => {
+      login: async (email, password) => {
         const requestOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -29,29 +24,26 @@ const getState = ({ getStore, getActions, setStore }) => {
             password: password
           })
         };
-      
-        return fetch(`${API_URL}/login`, requestOptions)
-          .then(response => {
-            if (response.status === 200) {
-              return response.json(); // Devuelve la respuesta como objeto JSON
-            } else {
-              throw new Error('Error occurred during login');
-            }
-          })
-          .then(data => {
+
+        try {
+          const response = await fetch(`${API_URL}/login`, requestOptions);
+
+          if (response.status === 200) {
+            const data = await response.json();
             if (data.user && data.access_token) {
-              const token = data.access_token; // Obtén el token de la respuesta
-              return { user: data.user, token: token }; // Retorna el objeto user y el token
+              const token = data.access_token;
+              return { user: data.user, token: token };
             } else {
               throw new Error('User object or token is missing in the response');
             }
-          })
-          .catch(error => {
-            throw new Error(`Error occurred during login: ${error.message}`);
-          });
+          } else {
+            throw new Error('Error occurred during login');
+          }
+        } catch (error) {
+          throw new Error(`Error occurred during login: ${error.message}`);
+        }
       },
-      
-      signup: (email, password) => {
+      signup: async (email, password) => {
         const requestOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -60,31 +52,26 @@ const getState = ({ getStore, getActions, setStore }) => {
             password: password
           })
         };
-      
-        return fetch(`${API_URL}/signup`, requestOptions)
-          .then(response => { 
-            if (response.status === 200) {
-              return response.json();
-            } else {
-              throw new Error('Error occurred during signup');
-            }
-          })
-          .then(data => {
+
+        try {
+          const response = await fetch(`${API_URL}/signup`, requestOptions);
+
+          if (response.status === 200) {
+            const data = await response.json();
             if (data.access_token) {
-              const token = data.access_token; // Obtén el token de la respuesta
-              // Realiza las acciones necesarias con el token
+              const token = data.access_token;
               console.log(`Token: ${token}`);
             } else {
               throw new Error('Token is missing in the response');
             }
-          })
-          .catch(error => {
-            throw new Error(`Error occurred during signup: ${error.message}`);
-          });
+          } else {
+            throw new Error('Error occurred during signup');
+          }
+        } catch (error) {
+          throw new Error(`Error occurred during signup: ${error.message}`);
+        }
       },
-
-      añadirCarrito: async (titulo, precio, cantidad) => {
-
+      añadirCarrito: async (id, titulo, precio, cantidad) => {
         const store = getStore();
         const isItemInCart = store.car.some(item => item.titulo === titulo);
 
@@ -97,7 +84,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           };
           const updatedCart = [...store.car, newItem];
           setStore({ car: updatedCart });
-      
+
           try {
             const response = await fetch(`${API_URL}/cart`, {
               method: "POST",
@@ -105,14 +92,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                 "Content-Type": "application/json"
               },
               body: JSON.stringify({
-
                 libro_id: newItem.id,
                 user_id: 1,
                 quantity: newItem.cantidad
-
               })
             });
-      
+
             if (response.ok) {
               // El elemento se agregó correctamente al carrito de compras en la base de datos
               getActions().getCarrito(); // Obtener los datos actualizados del carrito
@@ -127,14 +112,11 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         }
       },
-
       getCarrito: async () => {
         try {
           const response = await fetch(`${API_URL}/cart`);
           if (response.ok) {
             const data = await response.json();
-            console.log("Datos del carrito:", data); // Imprime los datos en la consola
-
             // Verificar la estructura de los datos del carrito
             data.forEach(item => {
               console.log(item.libro);
@@ -152,11 +134,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error("Error al obtener el carrito");
         }
       },
-    
       eliminarElementoCarrito: async (cartItemId) => {
         try {
-          console.log("ID del elemento a eliminar:", cartItemId); // Verificar el ID antes de eliminar
-
           const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
             method: "DELETE",
           });
@@ -174,8 +153,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       editarCarrito: async (cartItemId, cartItem) => {
         try {
-          console.log("ID del carrito a editar:", cartItemId);
-          console.log("Valor de quantity:", cartItem.quantity);
           const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
             method: "PUT",
             headers: {
@@ -187,7 +164,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             const data = await response.json();
             const store = getStore();
             const updatedCartItems = store.car.map(item => (item.id === cartItemId ? data : item));
-            setStore({ carrito: updatedCartItems });
+            setStore({ car: updatedCartItems });
           } else {
             throw new Error("Error al editar el carrito");
           }
@@ -196,12 +173,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error("Error al editar el carrito");
         }
       },
-      
-      // setCartItemId: (cartItemId) => {
-      //   setStore({ cartItemId: cartItemId });
-      // },
-
-      aumentarCantidad: titulo => {
+      aumentarCantidad: (titulo) => {
         const store = getStore();
         const updatedCart = store.car.map(item => {
           if (item.titulo === titulo) {
@@ -214,7 +186,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         setStore({ car: updatedCart });
       },
-      disminuirCantidad: titulo => {
+      disminuirCantidad: (titulo) => {
         const store = getStore();
         const updatedCart = store.car.map(item => {
           if (item.titulo === titulo && item.cantidad > 1) {
@@ -225,10 +197,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           return item;
         });
-
         setStore({ car: updatedCart });
       },
-      añadirFavoritos: item => {
+      añadirFavoritos: (item) => {
         const store = getStore();
         const isItemInFavorites = store.favorite.some(favoriteItem => favoriteItem.titulo === item.titulo);
 
@@ -237,7 +208,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           setStore({ favorite: updatedFavorites });
         }
       },
-      borrarFavoritos: item => {
+      borrarFavoritos: (item) => {
         const store = getStore();
         const updatedFavorites = store.favorite.filter(el => el.titulo !== item.titulo);
         setStore({ favorite: updatedFavorites });
@@ -279,7 +250,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error("Error al obtener los libros");
         }
       },
-      addLibro: async libro => {
+      addLibro: async (libro) => {
         try {
           const response = await fetch(`${API_URL}/libros`, {
             method: "POST",
@@ -323,7 +294,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error("Error al editar el libro");
         }
       },
-      deleteLibro: async id => {
+      deleteLibro: async (id) => {
         try {
           const response = await fetch(`${API_URL}/libros/${id}`, {
             method: "DELETE"
@@ -332,7 +303,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             const store = getStore();
             const updatedLibros = store.libros.filter(item => item.id !== id);
             setStore({ libros: updatedLibros });
-
           } else {
             throw new Error("Error al eliminar el libro");
           }
@@ -341,7 +311,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error("Error al eliminar el libro");
         }
       },
-
       sendCartData: async () => {
         try {
           const store = getStore();
@@ -352,11 +321,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
             body: JSON.stringify(store.car),
           });
-      
+
           if (response.ok) {
-            // El carrito se envió correctamente al backend
             console.log("Carrito enviado correctamente al backend");
-            // Aquí puedes realizar acciones adicionales después de enviar el carrito, si es necesario
           } else {
             console.log("Error al enviar el carrito al backend");
           }
@@ -364,73 +331,69 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error al realizar la solicitud POST para enviar el carrito al backend", error);
         }
       },
-
-getDirecciones: async () => {
-  try {
-    const response = await fetch(`${API_URL}/direcciones`);
-    if (response.ok) {
-      const data = await response.json();
-      setStore({ direcciones: data });
-    }
-  } catch (error) {
-    console.log("Error al obtener las direcciones", error);
-  }
-},
-
-addDireccion: async direccion => {
-  try {
-    const response = await fetch(`${API_URL}/direcciones`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
+      getDirecciones: async () => {
+        try {
+          const response = await fetch(`${API_URL}/direcciones`);
+          if (response.ok) {
+            const data = await response.json();
+            setStore({ direcciones: data });
+          }
+        } catch (error) {
+          console.log("Error al obtener las direcciones", error);
+        }
       },
-      body: JSON.stringify(direccion)
-    });
-    if (response.ok) {
-      const data = await response.json();
-      const store = getStore();
-      const updatedDirecciones = [...store.direcciones, data];
-      setStore({ direcciones: updatedDirecciones });
-    }
-  } catch (error) {
-    console.log("Error al crear la dirección", error);
-  }
-},
-
-editDireccion: async (id, direccion) => {
-  try {
-    const response = await fetch(`${API_URL}/direcciones/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
+      addDireccion: async (direccion) => {
+        try {
+          const response = await fetch(`${API_URL}/direcciones`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(direccion)
+          });
+          if (response.ok) {
+            const data = await response.json();
+            const store = getStore();
+            const updatedDirecciones = [...store.direcciones, data];
+            setStore({ direcciones: updatedDirecciones });
+          }
+        } catch (error) {
+          console.log("Error al crear la dirección", error);
+        }
       },
-      body: JSON.stringify(direccion)
-    });
-    if (response.ok) {
-      const data = await response.json();
-      const store = getStore();
-      const updatedDirecciones = store.direcciones.map(item => (item.id === id ? data : item));
-      setStore({ direcciones: updatedDirecciones });
-    }
-  } catch (error) {
-    console.log("Error al editar la dirección", error);
-  }
-},
-
-deleteDireccion: async id => {
-  try {
-    const response = await fetch(`${API_URL}/direcciones/${id}`, {
-      method: "DELETE"
-    });
-    if (response.ok) {
-      const store = getStore();
-      const updatedDirecciones = store.direcciones.filter(item => item.id !== id);
-      setStore({ direcciones: updatedDirecciones });
-    }
-  } catch (error) {
-    console.log("Error al eliminar la dirección", error);
-  }
-},
+      editDireccion: async (id, direccion) => {
+        try {
+          const response = await fetch(`${API_URL}/direcciones/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(direccion)
+          });
+          if (response.ok) {
+            const data = await response.json();
+            const store = getStore();
+            const updatedDirecciones = store.direcciones.map(item => (item.id === id ? data : item));
+            setStore({ direcciones: updatedDirecciones });
+          }
+        } catch (error) {
+          console.log("Error al editar la dirección", error);
+        }
+      },
+      deleteDireccion: async (id) => {
+        try {
+          const response = await fetch(`${API_URL}/direcciones/${id}`, {
+            method: "DELETE"
+          });
+          if (response.ok) {
+            const store = getStore();
+            const updatedDirecciones = store.direcciones.filter(item => item.id !== id);
+            setStore({ direcciones: updatedDirecciones });
+          }
+        } catch (error) {
+          console.log("Error al eliminar la dirección", error);
+        }
+      },
       calculateTotal: () => {
         const store = getStore();
         const total = store.car.reduce(
@@ -438,12 +401,9 @@ deleteDireccion: async id => {
           0
         );
         return `$${total.toFixed(2)}`;
-      },
+      }
     }
   };
 };
 
 export default getState;
-
-
-

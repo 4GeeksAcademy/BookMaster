@@ -22,20 +22,19 @@ export const Signup = () => {
       }),
     };
 
-    const resp = await fetch(signupUrl, requestNewUser).catch(() => false);
-
-    if (!resp) {
-      window.alert("There's been a problem with the request");
-      return;
+    try {
+      const response = await fetch(signupUrl, requestNewUser);
+      const data = await response.json();
+      if (response.ok) {
+        const token = data.access_token;
+        console.log(`Token: ${token}`);
+        navigate("/login");
+      } else {
+        throw new Error("Error occurred during signup");
+      }
+    } catch (error) {
+      console.log("Error occurred during signup:", error);
     }
-
-    window.alert("User created");
-    navigate("/login");
-    console.log("send data");
-    console.log(email);
-    actions.signup(email, password);
-    window.alert("User created");
-    navigate("/login");
   }
 
   return (

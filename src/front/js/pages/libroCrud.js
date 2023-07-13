@@ -1,5 +1,4 @@
-
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
 import '../../styles/librosCrud.css';
 
@@ -15,7 +14,6 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
   const [editando, setEditando] = useState(false);
   const [libroEditando, setLibroEditando] = useState(null);
 
-
   const { store, actions } = useContext(Context);
   useEffect(() => {
     // Obtener todos los libros al cargar el componente
@@ -23,7 +21,6 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
       .then(data => setLibros(data))
       .catch(error => console.log(error));
   }, []);
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,7 +33,7 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
       precio,
       stock,
     };
-  
+
     if (editando) {
       // Editar un libro existente
       actions
@@ -49,7 +46,6 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
         })
 
         .catch((error) => console.log(error));
-
 
       // Limpiar los campos de edición y restablecer el estado
       setImagen('');
@@ -73,7 +69,6 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
         })
 
         .catch((error) => console.log(error));
-
 
       // Limpiar los campos de entrada después de enviar el formulario
       setImagen('');
@@ -131,7 +126,7 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
 
       {/* Formulario para crear o editar un libro */}
       <form onSubmit={handleSubmit}>
-      <div>
+        <div>
           <label>Imagen:</label>
 
           <input type="file" onChange={handleFileChange} />
@@ -139,7 +134,7 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
         </div>
         <div>
           <label>Título:</label>
-          <input type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)}/>
+          <input type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
         </div>
         <div>
           <label>Autor:</label>
@@ -155,11 +150,11 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
         </div>
         <div>
           <label>Precio:</label>
-          <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)}/>
+          <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)} />
         </div>
         <div>
           <label>Stock:</label>
-          <input type="number" value={stock} onChange={(e) => setStock(parseInt(e.target.value))}/>
+          <input type="number" value={stock} onChange={(e) => setStock(parseInt(e.target.value))} />
         </div>
         <button className="btn btn-primary" type="submit">
           {editando ? 'Guardar Cambios' : 'Crear Libro'}
@@ -170,8 +165,8 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
       <h2>Lista de Libros</h2>
       <ul>
 
-        {store.libros &&
-          store.libros.map((libro) => (
+        {libros &&
+          libros.map((libro) => (
             <li key={libro.id}>
               <p>
                 ID: <strong>{libro.id}</strong>
@@ -205,7 +200,6 @@ export const LibroCRUD = ({ onLibroIdChange }) => {
               </button>
             </li>
           ))}
-
       </ul>
     </div>
   );
