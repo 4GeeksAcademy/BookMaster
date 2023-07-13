@@ -4,9 +4,6 @@ import { Context } from '../store/appContext';
 import '../../styles/librosCrud.css';
 
 export const LibroCRUD = ({ onLibroIdChange }) => {
-  const { store, actions } = useContext(Context);
-
-
   const [libros, setLibros] = useState([]);
   const [imagen, setImagen] = useState('');
   const [titulo, setTitulo] = useState('');
