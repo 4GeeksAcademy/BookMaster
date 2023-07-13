@@ -6,8 +6,8 @@ db = SQLAlchemy()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    role = db.Column(db.String(50), nullable=False, default='usuario')  # Utilizando un campo de texto para el rol
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -16,9 +16,12 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, it's a security breach
+            "role": self.role
+            # No serialices la contraseña, es un riesgo de seguridad
         }
 
+    def is_admin(self):
+        return self.role == 'admin'
 
 class Libro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,7 +33,7 @@ class Libro(db.Model):
     precio = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, titulo, autor, categoria, detalle, precio, stock, imagen=None):
+    def __init__(self, titulo, autor, categoria, detalle, precio, stock, imagen):
         self.imagen = imagen
         self.titulo = titulo
         self.autor = autor
@@ -47,11 +50,10 @@ class Libro(db.Model):
             "autor": self.autor,
             "categoria": self.categoria,
             "detalle": self.detalle,
-            "precio": self.precio
+            "precio": self.precio,
+            "stock": self.stock,
+            
         }
-
-# Carrito de compras
-
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     libro_id = db.Column(db.Integer, db.ForeignKey('libro.id'), nullable=False)
@@ -76,4 +78,22 @@ class CartItem(db.Model):
         }
         if hasattr(self.libro, 'precio'):
             serialized_data["precio"] = self.libro.precio
+
         return serialized_data
+
+class Direccion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    direccion = db.Column(db.String(255), nullable=False)
+    ciudad = db.Column(db.String(100), nullable=False)
+    pais = db.Column(db.String(100), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'direccion': self.direccion,
+            'ciudad': self.ciudad,
+            'pais': self.pais,
+        }
+
+        return serialized_data
+
