@@ -15,12 +15,13 @@ export const Home = () => {
         <div className="d-flex text-center mt-5 tarjetasPersonaje">
           {store.libros.map((libro) => (
             <CardsBooks
-              key={libro.id}
-              titulo={libro.titulo}
-              autor={libro.autor}
-              categoria={libro.categoria}
-              detalle={libro.detalle}
-              precio={libro.precio}
+            key={index + 1}
+            id={libro.id}
+            titulo={libro.titulo}
+            autor={libro.autor}
+            categoria={libro.categoria}
+            detalle={libro.detalle}
+            precio={libro.precio}
             />
           ))}
         </div>

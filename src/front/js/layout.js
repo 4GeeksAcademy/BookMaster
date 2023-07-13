@@ -15,8 +15,13 @@ import {AdminPage} from "./pages/adminPage.js";
 import {UsersPage} from "./pages/usersPage.js";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+
+import {Cart} from "./pages/cart"
+
+
 import { DireccionesCrud} from "./pages/direccionesCrud";
  
+
 //create your first component
 const Layout = () => {
     //the basename is used when your project is published in a subdirectory and not in the root of the domain
@@ -38,6 +43,7 @@ const Layout = () => {
                         <Route element={<AdminPage />} path="/vista-admin" />
                         <Route element={<UsersPage />} path="/usuarios" />
                         <Route element={<LibroCRUD />} path="/libros" />
+                        <Route element={<Cart />} path="/carrito" />
                         <Route element={<ForgotPassword />} path="/forgot-password" />
                         <Route element={<h1>Not found!</h1>} />
                         <Route element={<DireccionesCrud />} path="/direcciones" />

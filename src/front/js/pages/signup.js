@@ -12,11 +12,33 @@ export const Signup = () => {
 
   function sendData(e) {
     e.preventDefault();
+
+
+    const signupUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev/api/signup"
+
+    const requestNewUser = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: inputVal.email,
+          password: inputVal.password,
+        }),
+      };
+
+    const resp = await fetch(signupUrl, requestNewUser).catch(() => false);
+
+    if (!resp) return window.alert("There's been a problem with the request");
+
+    window.alert("User created");
+    navigate("/login")
+
+
     console.log("send data");
     console.log(email);
     actions.signup( email, password);
     window.alert("User created"); 
     navigate("/login"); 
+
   }
 
   return (
