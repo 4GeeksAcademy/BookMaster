@@ -10,8 +10,6 @@ export const Home = () => {
     <div className="container">
       <div className="text-start mt-5">
         <div className="pb-2">
-          <a className="btn btn-success m-2" href="/signup" role="button">Signup</a>
-          <a className="btn btn-primary m-2" href="/login" role="button">Login</a>
         </div>
         <h3 className="text-danger">Superación</h3>
         <div className="d-flex text-center mt-5 tarjetasPersonaje">

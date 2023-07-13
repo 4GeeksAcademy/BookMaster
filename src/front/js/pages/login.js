@@ -1,26 +1,18 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-
+import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
-import "../../styles/index.css";
+import { Link, useNavigate } from "react-router-dom";
+import { ForgotPassword } from "./forgotPassword.js";
 
 export const Login = () => {
-  const { store } = useContext(Context);
-
-  const [inputVal, setInputVal] = useState({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { actions, store } = useContext(Context);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
 
-  // control the variables email and password
-  const handleChange = (e) => {
-    setInputVal({
-      ...inputVal,
-      [e.target.id]: e.target.value
-    });
-  };
-
-  // login into the app
-  const handleSubmit = async (e) => {
+  const sendData = async (e) => {
     e.preventDefault();
+
 
     const loginUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev/api/login";
 
@@ -45,77 +37,77 @@ export const Login = () => {
     if (resp.status === 201) {
       window.sessionStorage.setItem("token", jsonResp.token);
       navigate("/private");
+
+    console.log("send Data");
+    console.log(email, password);
+
+    try {
+      const response = await actions.login(email, password);
+      const user = response.user;
+
+      if (user) {
+        if (user.role === "admin") {
+          navigate("/libros"); // Redirigir al usuario administrador a la página de libros
+        } else {
+          navigate("/"); // Redirigir al usuario normal a la página principal
+        }
+      } else {
+        console.log("Error: User object is missing in the response");
+      }
+    } catch (error) {
+      console.log("Error occurred during login:", error);
+
     }
   };
 
+  const handleForgotPasswordClick = () => {
+    setShowForgotPassword(true);
+  };
+
+  // Verificar si el usuario está autenticado y redirigirlo
+  
+
   return (
-    <section className="h-100 gradient-form" style={{ backgroundColor: "#eee" }}>
-      <div className="container py-3 h-100">
-        <div className="row d-flex justify-content-center align-items-center h-100">
-          <div className="col-xl-8">
-            <div className="card rounded-3 text-black">
-              <div className="row g-0">
-                <div className="col-lg-10 mx-auto">
-                  <div className="card-body p-md-5 mx-md-4">
-                    <div className="text-center">
-                      <h4 className="mt-1 mb-5 pb-1">Login</h4>
-                    </div>
-
-                    <form name="login" onSubmit={handleSubmit}>
-                      <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor="email">
-                          Username
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          className="form-control"
-                          placeholder="Insert your email"
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor="password">
-                          Password
-                        </label>
-                        <input
-                          type="password"
-                          id="password"
-                          className="form-control"
-                          placeholder="Insert your password"
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="text-center pt-1 mb-5 pb-1">
-                        <button
-                          className="btn btn-primary btn-lg gradient-custom-2 m-3"
-                          type="submit"
-                        >
-                          Login
-                        </button>
-                        <a className="text-muted m-3" href="#!">
-                          Forgot password?
-                        </a>
-                      </div>
-
-                      <div className="d-flex align-items-center justify-content-center pb-4">
-                        <p className="mb-0 me-2">Don't have an account?</p>
-                        <Link to={"/signup"}>
-                          <span className="btn btn-outline-danger">
-                            Create new
-                          </span>
-                        </Link>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <>
+      <form className="row g-3" onSubmit={sendData}>
+        <div className="col-md-6">
+          <label htmlFor="inputEmail4" className="form-label">
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="form-control"
+            id="inputEmail4"
+          />
         </div>
-      </div>
-    </section>
+        <div className="col-md-6">
+          <label htmlFor="inputPassword4" className="form-label">
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="form-control"
+            id="inputPassword4"
+          />
+        </div>
+        <div className="col-12">
+          <button type="submit" className="btn btn-primary">
+            Log In
+          </button>
+        </div>
+        <div className="col-12">
+          <Link to="#" onClick={handleForgotPasswordClick}>
+            Forgot your password?
+          </Link>
+        </div>
+      </form>
+      {showForgotPassword && (
+        <ForgotPassword handleClose={() => setShowForgotPassword(false)} />
+      )}
+    </>
   );
 };
