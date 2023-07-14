@@ -54,30 +54,31 @@ class Libro(db.Model):
             "stock": self.stock,
             
         }
-class CartItem(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    libro_id = db.Column(db.Integer, db.ForeignKey('libro.id'), nullable=False)
-    libro = db.relationship('Libro', backref='cart_items')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref='cart_items')
-    quantity = db.Column(db.Integer, nullable=False)
-    def __init__(self, libro, user, quantity):
-        self.libro = libro
-        self.user = user
-        self.quantity = quantity
-    def serialize(self):
-        serialized_data = {
-            "id": self.id,
-            "libro": self.libro.serialize(),
-            "user": self.user.serialize(),
-            "quantity": self.quantity,
-            "stock": self.libro.stock,
-            "imagen": self.libro.imagen
-        }
-        if hasattr(self.libro, 'precio'):
-            serialized_data["precio"] = self.libro.precio
-        return serialized_data
 
+class CartItem(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  libro_id = db.Column(db.Integer, db.ForeignKey('libro.id'), nullable=False)
+  libro = db.relationship('Libro', backref='cart_items')
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+  user = db.relationship('User', backref='cart_items')
+  quantity = db.Column(db.Integer, nullable=False)
+  def __init__(self, libro, user, quantity):
+    self.libro = libro
+    self.user = user
+    self.quantity = quantity
+  def serialize(self):
+    serialized_data = {
+      "id": self.id,
+      "libro": self.libro.serialize(),
+      "user": self.user.serialize(),
+      "quantity": self.quantity,
+      "stock": self.libro.stock,
+      "imagen": self.libro.imagen,
+      "libro_id": self.libro.id
+    }
+    if hasattr(self.libro, 'precio'):
+      serialized_data["precio"] = self.libro.precio
+    return serialized_data
 
 class Direccion(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -15,7 +15,7 @@ import {AdminPage} from "./pages/adminPage.js";
 import {UsersPage} from "./pages/usersPage.js";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
-
+import { CheckoutPage } from "./pages/checkout";
 import {Cart} from "./pages/cart"
 
 
@@ -44,6 +44,7 @@ const Layout = () => {
                         <Route element={<UsersPage />} path="/usuarios" />
                         <Route element={<LibroCRUD />} path="/libros" />
                         <Route element={<Cart />} path="/carrito" />
+                        <Route element={<CheckoutPage />} path="/checkout" />
                         <Route element={<ForgotPassword />} path="/forgot-password" />
                         <Route element={<h1>Not found!</h1>} />
                         <Route element={<DireccionesCrud />} path="/direcciones" />

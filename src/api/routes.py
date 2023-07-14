@@ -107,96 +107,80 @@ def protected():
 
 @api.route('/libros', methods=['GET'])
 def get_libros():
-    libros = Libro.query.all()
-    serialized_libros = [libro.serialize() for libro in libros]
-    return jsonify(serialized_libros), 200
-
-
+  libros = Libro.query.all()
+  serialized_libros = [libro.serialize() for libro in libros]
+  return jsonify(serialized_libros), 200
 @api.route('/libros', methods=['POST'])
 def create_libro():
-    imagen = request.files.get('imagen')
-    titulo = request.json.get('titulo')
-    autor = request.json.get('autor')
-    categoria = request.json.get('categoria')
-    detalle = request.json.get('detalle')
-    precio = request.json.get('precio')
-    stock = request.json.get('stock')
-
-    libro = Libro(imagen=imagen, titulo=titulo, autor=autor,
-                  categoria=categoria, detalle=detalle, precio=precio, stock=stock)
-
-    db.session.add(libro)
-    db.session.commit()
-
-    return jsonify(libro.serialize()), 201
+  data = request.get_json()
+  libro = Libro(**data)
+  db.session.add(libro)
+  db.session.commit()
+  return jsonify(libro.serialize()), 201
 @api.route('/libros/<int:libro_id>', methods=['PUT'])
 def update_libro(libro_id):
-    libro = Libro.query.get(libro_id)
-    if libro:
-        libro.titulo = request.json.get('titulo')
-        libro.autor = request.json.get('autor')
-        libro.categoria = request.json.get('categoria')
-        libro.detalle = request.json.get('detalle')
-        libro.precio = request.json.get('precio')
-        libro.stock = request.json.get('stock')
-        db.session.commit()
-        return jsonify(libro.serialize()), 200
-    else:
-        return jsonify({'message': 'Libro not found'}), 404
-
+  libro = Libro.query.get(libro_id)
+  if libro:
+    libro.titulo = request.json.get('titulo')
+    libro.autor = request.json.get('autor')
+    libro.categoria = request.json.get('categoria')
+    libro.detalle = request.json.get('detalle')
+    libro.precio = request.json.get('precio')
+    libro.stock = request.json.get('stock')
+    db.session.commit()
+    return jsonify(libro.serialize()), 200
+  else:
+    return jsonify({'message': 'Libro not found'}), 404
 @api.route('/libros/<int:libro_id>', methods=['DELETE'])
 def delete_libro(libro_id):
-    libro = Libro.query.get(libro_id)
-    if libro:
-        db.session.delete(libro)
-        db.session.commit()
-        return jsonify({'message': 'Libro deleted'}), 200
-    else:
-        return jsonify({'message': 'Libro not found'}), 404
+  libro = Libro.query.get(libro_id)
+  if libro:
+    db.session.delete(libro)
+    db.session.commit()
+    return jsonify({'message': 'Libro deleted'}), 200
+  else:
+    return jsonify({'message': 'Libro not found'}), 404
 
 # carrito de compras
 
 @api.route('/cart', methods=['GET'])
 def get_cart_items():
-    cart_items = CartItem.query.all()
-    serialized_cart_items = [cart_item.serialize() for cart_item in cart_items]
-    return jsonify(serialized_cart_items), 200
-
+  cart_items = CartItem.query.all()
+  serialized_cart_items = [cart_item.serialize() for cart_item in cart_items]
+  return jsonify(serialized_cart_items), 200
 @api.route('/cart', methods=['POST'])
 def create_cart():
-    libro_id = request.json.get('libro_id')
-    user_id = request.json.get('user_id')
-    quantity = request.json.get('quantity')
-    libro = Libro.query.get(libro_id)
-    user = User.query.get(user_id)
-    if libro and user:
-        cart_item = CartItem(libro=libro, user=user, quantity=quantity)
-        db.session.add(cart_item)
-        db.session.commit()
-        return jsonify(cart_item.serialize()), 201
-    else:
-        return jsonify({'message': 'Libro or User not found'}), 404
-    
+  libro_id = request.json.get('libro_id')
+  user_id = request.json.get('user_id')
+  quantity = request.json.get('quantity')
+  libro = Libro.query.get(libro_id)
+  user = User.query.get(user_id)
+  if libro and user:
+    cart_item = CartItem(libro=libro, user=user, quantity=quantity)
+    db.session.add(cart_item)
+    db.session.commit()
+    return jsonify(cart_item.serialize()), 201
+  else:
+    return jsonify({'message': 'Libro or User not found'}), 404
 @api.route('/cart/<int:cart_item_id>', methods=['DELETE'])
 def delete_cart_item(cart_item_id):
-    cart_item = CartItem.query.get(cart_item_id)
-    if cart_item:
-        db.session.delete(cart_item)
-        db.session.commit()
-        return jsonify({'message': 'Cart item deleted'}), 200
-    else:
-        return jsonify({'message': 'Cart item not found'}), 404
-    
+  cart_item = CartItem.query.get(cart_item_id)
+  if cart_item:
+    db.session.delete(cart_item)
+    db.session.commit()
+    return jsonify({'message': 'Cart item deleted'}), 200
+  else:
+    return jsonify({'message': 'Cart item not found'}), 404
 @api.route('/cart/<int:cart_item_id>', methods=['PUT'])
 def update_cart_item(cart_item_id):
-    cart_item = CartItem.query.get(cart_item_id)
-    quantity = request.json.get('quantity')
-    if cart_item:
-        cart_item.quantity = quantity
-        db.session.commit()
-        return jsonify(cart_item.serialize()), 200
-    else:
-        return jsonify({'message': 'Cart item not found'}), 404
+  cart_item = CartItem.query.get(cart_item_id)
+  quantity = request.json.get('quantity')
+  if cart_item:
+    cart_item.quantity = quantity
+    db.session.commit()
+    return jsonify(cart_item.serialize()), 200
+  else:
+    return jsonify({'message': 'Cart item not found'}), 404
     
 @api.route('/direcciones', methods=['GET'])
 def get_direcciones():

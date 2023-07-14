@@ -1,19 +1,16 @@
 import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
-import { Link } from "react-router-dom";
-const CardsBooks = (props) => {
+export const CardsBooks = (props) => {
   const { actions, store } = useContext(Context);
   const isItemInCart = store.car.some(item => item.titulo === props.titulo);
   const isItemInFavorites = store.favorite.some(favoriteItem => favoriteItem.titulo === props.titulo);
   const [cantidad, setCantidad] = useState(1);
-
   const handleAddToFavorites = () => {
     actions.añadirFavoritos(props);
   };
-
   const handleAddToCart = () => {
-    actions.añadirCarrito(props.id, props.titulo, props.precio, cantidad); // Pasamos el ID y la cantidad seleccionada
+    actions.añadirCarrito(props.id, props.titulo, props.precio, cantidad);
   };
   const handleIncreaseQuantity = () => {
     setCantidad(cantidad + 1);
@@ -31,7 +28,7 @@ const CardsBooks = (props) => {
           <h5 className="card-title">Titulo: {props.titulo}</h5>
           <p className="card-text">Autor: {props.autor}</p>
           <p className="card-text">Categoría: {props.categoria}</p>
-          <p className="card-text">Detalles:{props.detalle}</p>
+          <p className="card-text">Detalles: {props.detalle}</p>
           <p className="card-text">Precio: {props.precio}</p>
           <p className="card-text">Disponibles: {props.stock}</p>
           <button
@@ -39,10 +36,9 @@ const CardsBooks = (props) => {
             className={`btn btn-primary ${isItemInCart ? 'disabled' : ''}`}
             type="button"
             onClick={handleAddToCart}
-            id="cartButton">
+          >
             Agregar al carrito
           </button>
-
           <div className="card-footer">
             <small className="text-secondary">
               <span>

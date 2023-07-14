@@ -1,6 +1,6 @@
 import React, { useState, useContext} from "react";
 import { Context } from "../store/appContext";
-import { Modal, Button } from "react-bootstrap";
+
 import { useNavigate } from "react-router-dom";
 
 export const Signup = () => {
@@ -45,9 +45,9 @@ export const Signup = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      <Button variant="primary" type="submit">
+      <button className="btn btn-primary" type="submit">
         Sign Up
-      </Button>
+      </button>
     </form>
   );
 };
