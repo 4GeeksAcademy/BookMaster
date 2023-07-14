@@ -6,33 +6,22 @@ import { ForgotPassword } from "./forgotPassword.js";
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { actions } = useContext(Context);
+  const { actions, store } = useContext(Context);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
-
+  
   const sendData = async (e) => {
     e.preventDefault();
-
-    const loginUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev/api/login";
-
-    const requestUser = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    };
-
+    console.log("send Data");
+    console.log(email, password);
     try {
       const response = await actions.login(email, password);
       const user = response.user;
-
       if (user) {
         if (user.role === "admin") {
-          navigate("/libros");
+          navigate("/vista-admin"); // Redirigir al usuario administrador a la página de libros
         } else {
-          navigate("/");
+          navigate("/private"); // Redirigir al usuario normal a la página principal
         }
       } else {
         console.log("Error: User object is missing in the response");
@@ -41,11 +30,10 @@ export const Login = () => {
       console.log("Error occurred during login:", error);
     }
   };
-
   const handleForgotPasswordClick = () => {
     setShowForgotPassword(true);
   };
-
+  // Verificar si el usuario está autenticado y redirigirlo
   return (
     <>
       <form className="row g-3" onSubmit={sendData}>

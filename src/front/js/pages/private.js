@@ -14,9 +14,8 @@ export const Private = () => {
     loading: true
   });
 
-  const checkUser = async (token) => {
-    const checkApiUrl = "https://stalinnarvaez-reimagined-waddle-qjvgj5x9wp7f4jx-3001.preview.app.github.dev//api/private";
-
+    const checkUser = async (token) => {
+        const checkApiUrl = process.env.BACKEND_URL + "api/private";
     const requestAuth = {
       method: "GET",
       headers: {
@@ -65,17 +64,16 @@ export const Private = () => {
 
     userAuth();
   }, []);
-
+  console.log(authState);
   if (!authState.userAuth && authState.loading) {
     return <h1>... loading</h1>;
   }
-
+  
   if (!authState.userAuth && !authState.loading) {
     window.alert("Login again");
     navigate("/login");
-    return null;
+    return null; // Agregamos un return null para evitar errores de renderizado
   }
-
   return (
     <div className="container">
       <div className="text-start mt-5">
@@ -90,6 +88,7 @@ export const Private = () => {
               categoria={libro.categoria}
               detalle={libro.detalle}
               precio={libro.precio}
+              stock={libro.stock}
             />
           ))}
         </div>
