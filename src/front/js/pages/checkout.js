@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Context } from "../store/appContext";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { Context } from "../store/appContext";
+
 export const CheckoutPage = () => {
   const { store } = useContext(Context);
   const [amount, setAmount] = useState(0);
+
   useEffect(() => {
     const total = store.car.reduce(
       (accumulator, item) => accumulator + item.precio * item.quantity,
@@ -11,14 +13,16 @@ export const CheckoutPage = () => {
     );
     setAmount(total);
   }, [store.car]);
+
   const handlePaymentSuccess = () => {
     console.log("El pago ha sido exitoso");
   };
+
   return (
     <div>
       <PayPalScriptProvider
         options={{
-          "client-id": "AXSVz6Xr4tsndjjUyI9Wijv9DDsX04yfyU9bIDx7qMewlU4eqinSO_8Z0q6Ug_1Mf9C7oEJPf_tnJY2w"
+          "client-id": "AeMXrCdb7wQr2Uk3CQEw66pnFnoLrerDR_gKBAfonrJTFK-oWaFxTZAk26hFmw06cdF-7X_toy0o9jLG"
         }}
       >
         <PayPalButtons
@@ -28,7 +32,7 @@ export const CheckoutPage = () => {
                 purchase_units: [
                   {
                     amount: {
-                      value: amount.toFixed(2),
+                      value: amount, 
                       currency_code: "USD"
                     }
                   }

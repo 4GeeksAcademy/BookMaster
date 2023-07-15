@@ -1,4 +1,17 @@
 const API_URL = "https://stalinnarvaez-refactored-waddle-4j7g6grqx4qh7v9x-3001.preview.app.github.dev/api";
+
+const getToken = () => {
+  return sessionStorage.getItem("token");
+};
+
+const getAuthHeaders = () => {
+  const token = getToken();
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  };
+};
+
 const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
@@ -10,8 +23,8 @@ const getState = ({ getStore, getActions, setStore }) => {
     },
     actions: {
       logout: () => {
-        console.log("logout")
-        setStore({auth: false})
+        console.log("logout");
+        setStore({ auth: false });
         localStorage.removeItem("token");
       },
       login: (email, password) => {
@@ -93,12 +106,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           try {
             const response = await fetch(`${API_URL}/cart`, {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
+              headers: getAuthHeaders(),
               body: JSON.stringify({
                 libro_id: newItem.id,
-                user_id: 1,
                 quantity: newItem.cantidad
               })
             });
@@ -119,7 +129,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       getCarrito: async () => {
         try {
-          const response = await fetch(`${API_URL}/cart`);
+          const response = await fetch(`${API_URL}/cart`, {
+            headers: getAuthHeaders()
+          });
           if (response.ok) {
             const data = await response.json();
             console.log("Datos del carrito:", data); // Imprime los datos en la consola
@@ -144,6 +156,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("ID del elemento a eliminar:", cartItemId); // Verificar el ID antes de eliminar
           const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
             method: "DELETE",
+            headers: getAuthHeaders()
           });
           if (response.ok) {
             // Elemento del carrito eliminado correctamente
@@ -162,18 +175,19 @@ const getState = ({ getStore, getActions, setStore }) => {
         try {
           console.log("ID del carrito a editar:", cartItemId);
           console.log("Valor de quantity:", cartItem.quantity);
+      
+          // Realiza la llamada al servidor para editar el carrito
           const response = await fetch(`${API_URL}/cart/${cartItemId}`, {
             method: "PUT",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ quantity: cartItem.quantity })
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ quantity: cartItem.quantity }),
           });
+      
           if (response.ok) {
             const data = await response.json();
             const store = getStore();
-            const updatedCartItems = store.car.map(item => (item.id === cartItemId ? data : item));
-            setStore({ carrito: updatedCartItems });
+            const updatedCartItems = store.car.map((item) => (item.id === cartItemId ? data : item));
+            setStore({ car: updatedCartItems });
           } else {
             throw new Error("Error al editar el carrito");
           }
@@ -182,9 +196,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error("Error al editar el carrito");
         }
       },
-      setCartItemId: (cartItemId) => {
-        setStore({ cartItemId: cartItemId });
-      },
+      
 
       aumentarCantidad: titulo => {
         const store = getStore();

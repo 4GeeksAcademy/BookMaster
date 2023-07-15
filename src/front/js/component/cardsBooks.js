@@ -7,13 +7,19 @@ export const CardsBooks = (props) => {
   const isItemInCart = store.car.some(item => item.titulo === props.titulo);
   const isItemInFavorites = store.favorite.some(favoriteItem => favoriteItem.titulo === props.titulo);
   const [cantidad, setCantidad] = useState(1);
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleAddToFavorites = () => {
     actions.añadirFavoritos(props);
   };
 
   const handleAddToCart = () => {
-    actions.añadirCarrito(props.id, props.titulo, props.precio, cantidad);
+    if (cantidad > props.stock) {
+      setShowAlert(true);
+    } else {
+      setShowAlert(false); // Ocultar el cuadro de alerta
+      actions.añadirCarrito(props.id, props.titulo, props.precio, cantidad);
+    }
   };
 
   const handleIncreaseQuantity = () => {
@@ -25,6 +31,7 @@ export const CardsBooks = (props) => {
       setCantidad(cantidad - 1);
     }
   };
+
   return (
     <div className="card-group">
       <div className="card" style={{ maxWidth: "350px" }}>
@@ -36,6 +43,11 @@ export const CardsBooks = (props) => {
           <p className="card-text">Detalles: {props.detalle}</p>
           <p className="card-text">Precio: {props.precio}</p>
           <p className="card-text">Disponibles: {props.stock}</p>
+          {showAlert && (
+            <div className="alert alert-danger" role="alert">
+              Solo se puede agregar hasta {props.stock} libros al carrito
+            </div>
+          )}
           <button
             data-toggle="modal"
             className={`btn btn-primary ${isItemInCart ? 'disabled' : ''}`}
@@ -63,7 +75,7 @@ export const CardsBooks = (props) => {
             <div className="mt-2">
               <button className="btn btn-sm btn-primary me-1" onClick={handleDecreaseQuantity}>-</button>
               <button className="btn btn-sm btn-primary ms-1" onClick={handleIncreaseQuantity}>+</button>
-              <span className="mx-2">Cantidad: {cantidad}</span>
+              <p className="mx-2">Libros para Agregar: {cantidad}</p>
             </div>
           </div>
         </div>
