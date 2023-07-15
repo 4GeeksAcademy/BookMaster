@@ -1,17 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
+import "../../styles/cart.css";
+
 export const Cart = () => {
   const { store, actions } = useContext(Context);
   const [inputValues, setInputValues] = useState([]);
+
   useEffect(() => {
     actions.getCarrito();
   }, []);
+
   useEffect(() => {
     if (store.car && store.car.length > 0) {
-      setInputValues(store.car.map(item => item.quantity));
+      setInputValues(store.car.map((item) => item.quantity));
     }
   }, [store.car]);
+
   const handleEditCart = (itemId, index, item) => {
     const inputValue = inputValues[index];
     if (inputValue <= item.stock) {
@@ -20,19 +25,22 @@ export const Cart = () => {
       alert(`Solo se puede agregar hasta ${item.stock} libros al carrito`);
     }
   };
+
   const handleRemoveFromCart = (itemId) => {
     actions.eliminarElementoCarrito(itemId);
   };
+
   const handleInputChange = (index, value) => {
     const newInputValues = [...inputValues];
     newInputValues[index] = value;
     setInputValues(newInputValues);
   };
+
   return (
-    <>
+    <div className="cart-container">
       <h1>Carrito de Compras</h1>
       {store.car.map((item, index) => (
-        <div key={index}>
+        <div key={index} className="cart-item">
           <h3>{item.libro.titulo}</h3>
           <p>Precio: {item.precio}</p>
           <p>Cantidad: {item.quantity}</p>
@@ -46,12 +54,9 @@ export const Cart = () => {
           <button onClick={() => handleRemoveFromCart(item.id)}>Eliminar del Carrito</button>
         </div>
       ))}
-      <Link Link className="btn btn-primary" to="/direcciones">Ir a direcciones</Link>
-    </>
+      <Link className="btn btn-primary" to="/direcciones">
+        Ir a direcciones
+      </Link>
+    </div>
   );
 };
-
-
-
-
-

@@ -96,9 +96,9 @@ export const LibroCRUD = () => {
     }
   };
   return (
-    <div className="container-fluid">
-      <h1>Agregar Libro</h1>
-      <form onSubmit={handleSubmit}>
+    <div className="libro-crud-container">
+      <h1 className="libro-crud-heading">Agregar Libro</h1>
+      <form className="libro-crud-form" onSubmit={handleSubmit}>
         <div>
           <label>Imagen:</label>
           <input type="file" onChange={handleFileChange} />
@@ -131,8 +131,8 @@ export const LibroCRUD = () => {
           {editando ? 'Guardar Cambios' : 'Crear Libro'}
         </button>
       </form>
-      <h2>Lista de Libros</h2>
-      <ul>
+      <h2 className="libro-crud-heading">Lista de Libros</h2>
+      <ul className="libro-crud-list">
         {store.libros &&
           store.libros.map((libro) => (
             <li key={libro.id}>

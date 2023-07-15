@@ -1,0 +1,71 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+  
+  .text-danger {
+    color: #dc3545;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .tarjetasPersonaje {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .tarjetasPersonaje .card {
+    width: 200px;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .tarjetasPersonaje .card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .tarjetasPersonaje .card .card-title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .tarjetasPersonaje .card .card-text {
+    font-size: 14px;
+    color: #777;
+    margin-top: 10px;
+  }
+  
+  .tarjetasPersonaje .card .btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .tarjetasPersonaje .card .btn:hover {
+    background-color: #c82333;
+  }

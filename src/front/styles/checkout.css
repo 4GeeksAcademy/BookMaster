@@ -1,0 +1,23 @@
+.checkout-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .checkout-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .checkout-total {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  /* Personaliza los estilos de los botones de PayPal según tus necesidades */
+  .paypal-buttons-container {
+    margin-top: 20px;
+  }

@@ -2,9 +2,9 @@ import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CardsBooks from "../component/cardsBooks";
 import { Context } from "../store/appContext";
-import "../../styles/index.css";
+import "../../styles/private.css";
 export const Private = () => {
-  const { store } = useContext(Context);
+  const { store,actions } = useContext(Context);
   const navigate = useNavigate();
   const [authState, setAuthState] = useState({
     user: null,
@@ -62,10 +62,17 @@ export const Private = () => {
     navigate("/login");
     return null; // Agregamos un return null para evitar errores de renderizado
   }
+  const handleLogout = () => {
+    actions.logout(); // Llama a la función de logout del contexto
+    navigate("/login"); // Redirige al usuario a la página de login
+  };
   return (
     <div className="container">
+       <button className="btn btn-danger btn-lg" onClick={handleLogout}>
+        Cerrar Sesión
+      </button>
       <div className="text-start mt-5">
-        <h3 className="text-danger">Superación</h3>
+       
         <div className="d-flex text-center mt-5 tarjetasPersonaje">
           {store.libros.map((libro, index) => (
             <CardsBooks
@@ -80,6 +87,7 @@ export const Private = () => {
             />
           ))}
         </div>
+        
       </div>
     </div>
   );

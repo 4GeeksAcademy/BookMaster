@@ -21,7 +21,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       logout: () => {
         console.log("logout")
         setStore({auth: false})
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
       },
   
       login: (email, password) => {

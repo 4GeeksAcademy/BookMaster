@@ -1,44 +1,66 @@
-.container {
-    margin-top: 20px;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .table th,
-  .table td {
-    padding: 10px;
-    border: 1px solid #ccc;
-  }
-  
-  .btn {
-    padding: 5px 10px;
-    margin-right: 5px;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    color: #fff;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-    color: #fff;
-  }
-  
-  .form-group {
-    margin-bottom: 10px;
-  }
-  
-  .label {
-    display: block;
-    font-weight: bold;
-  }
-  
-  .input {
-    width: 100%;
-    padding: 5px;
-  }
-  
+.direcciones-crud-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.direcciones-crud-heading {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.direcciones-crud-table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.direcciones-crud-table th,
+.direcciones-crud-table td {
+  padding: 10px;
+  text-align: left;
+}
+
+.direcciones-crud-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.direcciones-crud-form {
+  margin-top: 20px;
+}
+
+.direcciones-crud-form label {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.direcciones-crud-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.direcciones-crud-form button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.direcciones-crud-links {
+  margin-top: 20px;
+}
+
+.direcciones-crud-links a {
+  display: inline-block;
+  margin-right: 10px;
+}

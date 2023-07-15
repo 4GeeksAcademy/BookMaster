@@ -96,5 +96,3 @@ class Direccion(db.Model):
             'pais': self.pais,
             "user": self.user.serialize() if self.user else None
         }
-
-

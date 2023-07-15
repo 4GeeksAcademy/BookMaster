@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
 import { Link, useNavigate } from "react-router-dom";
-import { ForgotPassword } from "./forgotPassword.js";
+import "../../styles/login.css";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -38,49 +38,55 @@ export const Login = () => {
   };
 
   // Verificar si el usuario está autenticado y redirigirlo
-  
 
   return (
-    <>
-      <form className="row g-3" onSubmit={sendData}>
-        <div className="col-md-6">
-          <label htmlFor="inputEmail4" className="form-label">
+    <div className="login-container">
+      <form className="login-form" onSubmit={sendData}>
+        <h2 className="login-title">Log In</h2>
+        <div className="form-group">
+          <label htmlFor="inputEmail" className="login-label">
             Email
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="form-control"
-            id="inputEmail4"
+            className="form-control login-input"
+            id="inputEmail"
+            placeholder="Please insert your email"
           />
         </div>
-        <div className="col-md-6">
-          <label htmlFor="inputPassword4" className="form-label">
+        <div className="form-group">
+          <label htmlFor="inputPassword" className="login-label">
             Password
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="form-control"
-            id="inputPassword4"
+            className="form-control login-input"
+            id="inputPassword"
+            placeholder="Please insert your password"
           />
         </div>
-        <div className="col-12">
-          <button type="submit" className="btn btn-primary">
+        <div className="form-group">
+          <button type="submit" className="btn btn-primary login-btn">
             Log In
           </button>
+          <Link to="/signup" className="signup-link">
+            Don't have an account? Sign up!
+          </Link>
         </div>
-        <div className="col-12">
-          <Link to="#" onClick={handleForgotPasswordClick}>
+        <div className="form-group">
+          <Link
+            to="/forgot-password"
+            className="forgot-password-link"
+            onClick={handleForgotPasswordClick}
+          >
             Forgot your password?
           </Link>
         </div>
       </form>
-      {showForgotPassword && (
-        <ForgotPassword handleClose={() => setShowForgotPassword(false)} />
-      )}
-    </>
+    </div>
   );
 };

@@ -107,9 +107,9 @@ export const DireccionesCrud = () => {
   };
 
   return (
-    <div>
-      <h2>Direcciones</h2>
-      <table className="table">
+    <div className="direcciones-crud-container">
+      <h2 className="direcciones-crud-heading">Direcciones</h2>
+      <table className="direcciones-crud-table">
         <thead>
           <tr>
             <th>Calle</th>
@@ -120,7 +120,7 @@ export const DireccionesCrud = () => {
         </thead>
         <tbody>{renderDirecciones()}</tbody>
       </table>
-      <div>
+      <div className="direcciones-crud-form">
         <h3>Agregar Dirección</h3>
         <div>
           <label>Calle:</label>
@@ -150,7 +150,7 @@ export const DireccionesCrud = () => {
           Agregar
         </button>
       </div>
-      <div>
+      <div className="direcciones-crud-links">
         <span style={{ display: 'block' }}>
           <Link to="/">Volver</Link>
         </span>
