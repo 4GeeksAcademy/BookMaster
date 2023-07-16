@@ -299,28 +299,28 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
-editLibro: async (id, libro) => {
-        try {
-          const response = await fetch(`${API_URL}/libros/${id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(libro)
-          });
-          if (response.ok) {
-            const data = await response.json();
-            const store = getStore();
-            const updatedLibros = store.libros.map(item => (item.id === id ? data : item));
-            setStore({ libros: updatedLibros });
-          } else {
-            throw new Error("Error al editar el libro");
-          }
-        } catch (error) {
-          console.log("Error al editar el libro", error);
-          throw new Error("Error al editar el libro");
-        }
-      },
+      editLibro: async (id, libro) => {
+            try {
+              const response = await fetch(`${API_URL}/libros/${id}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(libro)
+              });
+              if (response.ok) {
+                const data = await response.json();
+                const store = getStore();
+                const updatedLibros = store.libros.map(item => (item.id === id ? data : item));
+                setStore({ libros: updatedLibros });
+              } else {
+                throw new Error("Error al editar el libro");
+              }
+            } catch (error) {
+              console.log("Error al editar el libro", error);
+              throw new Error("Error al editar el libro");
+            }
+          },
       deleteLibro: async id => {
         try {
           const response = await fetch(`${API_URL}/libros/${id}`, {
@@ -359,75 +359,101 @@ editLibro: async (id, libro) => {
           console.log("Error al realizar la solicitud POST para enviar el carrito al backend", error);
         }
       },
-getDirecciones: async () => {
-  try {
-    const response = await fetch(`${API_URL}/direcciones`);
-    if (response.ok) {
-      const data = await response.json();
-      setStore({ direcciones: data });
-    }
-  } catch (error) {
-    console.log("Error al obtener las direcciones", error);
-  }
-},
-añadirDireccion: async (calle, ciudad, pais) => {
-  const newDireccion = {
-    user_id: 1,
-    calle: calle,
-    ciudad: ciudad,
-    pais: pais
-  };
-  try {
-    const response = await fetch(`${API_URL}/direcciones`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+      getDirecciones: async () => {
+        try {
+          const token = getToken();
+          const requestOptions = {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            }
+          };
+
+          const response = await fetch(`${API_URL}/direcciones`, requestOptions);
+          if (response.ok) {
+            const data = await response.json();
+            setStore({ direcciones: data });
+          } else {
+            throw new Error('Error al obtener las direcciones');
+          }
+        } catch (error) {
+          console.log('Error al obtener las direcciones', error);
+        }
       },
-      body: JSON.stringify(newDireccion)
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      const store = getStore();
-      const updatedDirecciones = [...store.direcciones, { ...responseData }];
-      setStore({ direcciones: updatedDirecciones });
-    }
-  } catch (error) {
-    console.log("Error al crear la dirección", error);
-  }
-},
-editDireccion: async (id, direccion) => {
-  try {
-    const response = await fetch(`${API_URL}/direcciones/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
+            
+      añadirDireccion: async (calle, ciudad, pais) => {
+        const token = getToken();
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            calle: calle,
+            ciudad: ciudad,
+            pais: pais
+          })
+        };
+        try {
+          const response = await fetch(`${API_URL}/direcciones`, requestOptions);
+          if (response.ok) {
+            const responseData = await response.json();
+            const store = getStore();
+            const updatedDirecciones = [...store.direcciones, { ...responseData }];
+            setStore({ direcciones: updatedDirecciones });
+          }
+        } catch (error) {
+          console.log('Error al crear la dirección', error);
+        }
+      },      
+      editDireccion: async (id, direccion) => {
+        try {
+          const token = getToken();
+          const requestOptions = {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(direccion)
+          };
+          const response = await fetch(`${API_URL}/direcciones/${id}`, requestOptions);
+          if (response.ok) {
+            const data = await response.json();
+            const store = getStore();
+            const updatedDirecciones = store.direcciones.map(item => (item.id === id ? data : item));
+            setStore({ direcciones: updatedDirecciones });
+          } else {
+            throw new Error("Error al editar la dirección");
+          }
+        } catch (error) {
+          console.log("Error al editar la dirección", error);
+        }
       },
-      body: JSON.stringify(direccion)
-    });
-    if (response.ok) {
-      const data = await response.json();
-      const store = getStore();
-      const updatedDirecciones = store.direcciones.map(item => (item.id === id ? data : item));
-      setStore({ direcciones: updatedDirecciones });
-    }
-  } catch (error) {
-    console.log("Error al editar la dirección", error);
-  }
-},
-deleteDireccion: async id => {
-  try {
-    const response = await fetch(`${API_URL}/direcciones/${id}`, {
-      method: "DELETE"
-    });
-    if (response.ok) {
-      const store = getStore();
-      const updatedDirecciones = store.direcciones.filter(item => item.id !== id);
-      setStore({ direcciones: updatedDirecciones });
-    }
-  } catch (error) {
-    console.log("Error al eliminar la dirección", error);
-  }
-},
+      
+      deleteDireccion: async id => {
+        try {
+          const token = getToken();
+          const requestOptions = {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          };
+          const response = await fetch(`${API_URL}/direcciones/${id}`, requestOptions);
+          if (response.ok) {
+            const store = getStore();
+            const updatedDirecciones = store.direcciones.filter(item => item.id !== id);
+            setStore({ direcciones: updatedDirecciones });
+          } else {
+            throw new Error("Error al eliminar la dirección");
+          }
+        } catch (error) {
+          console.log("Error al eliminar la dirección", error);
+        }
+      },      
       calculateTotal: () => {
         const store = getStore();
         const total = store.car.reduce(

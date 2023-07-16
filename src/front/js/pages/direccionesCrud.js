@@ -9,12 +9,13 @@ export const DireccionesCrud = () => {
   const [calle, setCalle] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [pais, setPais] = useState("");
-  const [editId, setEditId] = useState(null); // ID de la dirección en modo de edición}
-  
+  const [editId, setEditId] = useState(null); // ID de la dirección en modo de edición
+
   useEffect(() => {
     // Cargar las direcciones al iniciar el componente
     actions.getDirecciones();
   }, [actions]);
+
   const handleAddDireccion = () => {
     actions.añadirDireccion(calle, ciudad, pais)
       .then(() => {
@@ -24,11 +25,13 @@ export const DireccionesCrud = () => {
       .catch(error => {
         console.log("Error al agregar la dirección", error);
       });
+
     // Limpiar los campos de entrada
     setCalle("");
     setCiudad("");
     setPais("");
   };
+
   const handleEditDireccion = (id, direccion) => {
     actions.editDireccion(id, direccion)
       .then(() => {
@@ -40,6 +43,7 @@ export const DireccionesCrud = () => {
         console.log("Error al editar la dirección", error);
       });
   };
+
   const handleDeleteDireccion = id => {
     actions.deleteDireccion(id)
       .then(() => {
@@ -50,10 +54,12 @@ export const DireccionesCrud = () => {
         console.log("Error al eliminar la dirección", error);
       });
   };
+
   useEffect(() => {
     // Actualizar el estado local de las direcciones cada vez que cambie la lista de direcciones en el store
     setDirecciones(store.direcciones);
   }, [store.direcciones]);
+
   const renderDirecciones = () => {
     return direcciones.map(direccion => (
       <tr key={direccion.id}>
@@ -66,6 +72,7 @@ export const DireccionesCrud = () => {
               className="btn btn-sm btn-success"
               onClick={() =>
                 handleEditDireccion(direccion.id, {
+                  user_id: direccion.user_id, // Agregar el user_id
                   calle: calle,
                   ciudad: ciudad,
                   pais: pais
@@ -97,6 +104,7 @@ export const DireccionesCrud = () => {
       </tr>
     ));
   };
+
   return (
     <div>
       <h2>Direcciones</h2>

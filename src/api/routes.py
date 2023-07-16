@@ -180,57 +180,92 @@ def delete_cart_item(cart_item_id):
     else:
         return jsonify({'message': 'Cart item not found or unauthorized'}), 404
 
-@api.route('/direcciones', methods=['GET'])
-def get_direcciones():
-    direcciones = Direccion.query.all()
-    serialized_direcciones = [direccion.to_dict() for direccion in direcciones]
-    return jsonify(serialized_direcciones), 200
+# direcciones de usuario
 
 @api.route('/direcciones', methods=['POST'])
+@jwt_required()
 def create_direccion():
-    user_id = request.json.get('user_id')
-    calle = request.json.get('calle')
-    pais = request.json.get('pais')
-    ciudad = request.json.get('ciudad')
-    user = User.query.get(user_id)
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(email=current_user).first()
+    
     if user:
+        data = request.get_json()
+        calle = data.get('calle')
+        pais = data.get('pais')
+        ciudad = data.get('ciudad')
+
         nueva_direccion = Direccion(pais=pais, ciudad=ciudad, calle=calle, user=user)
         db.session.add(nueva_direccion)
         db.session.commit()
+
         return jsonify(nueva_direccion.to_dict()), 201
     else:
         return jsonify({'error': 'User not found'}), 404
+
+@api.route('/direcciones', methods=['GET'])
+@jwt_required()
+def get_direcciones():
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(email=current_user).first()
     
+    if user:
+        direcciones = Direccion.query.filter_by(user_id=user.id).all()
+        serialized_direcciones = [direccion.to_dict() for direccion in direcciones]
+        return jsonify(serialized_direcciones), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404
+
 @api.route('/direcciones/<int:direccion_id>', methods=['GET'])
+@jwt_required()
 def get_direccion(direccion_id):
-    direccion = Direccion.query.get(direccion_id)
-    if direccion:
-        return jsonify(direccion.to_dict()), 200
-    else:
-        return jsonify({'error': 'Dirección no encontrada'}), 404
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(email=current_user).first()
     
+    if user:
+        direccion = Direccion.query.filter_by(id=direccion_id, user_id=user.id).first()
+        if direccion:
+            return jsonify(direccion.to_dict()), 200
+        else:
+            return jsonify({'error': 'Dirección no encontrada o no autorizada'}), 404
+    else:
+        return jsonify({'error': 'User not found'}), 404
+
 @api.route('/direcciones/<int:direccion_id>', methods=['PUT'])
+@jwt_required()
 def update_direccion(direccion_id):
-    direccion_data = request.get_json()
-    direccion = Direccion.query.get(direccion_id)
-    if direccion:
-        direccion.calle = direccion_data.get('calle', direccion.calle)
-        direccion.ciudad = direccion_data.get('ciudad', direccion.ciudad)
-        direccion.pais = direccion_data.get('pais', direccion.pais)
-        db.session.commit()
-        return jsonify(direccion.to_dict()), 200
-    else:
-        return jsonify({'error': 'Dirección no encontrada'}), 404
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(email=current_user).first()
     
-@api.route('/direcciones/<int:direccion_id>', methods=['DELETE'])
-def delete_direccion(direccion_id):
-    direccion = Direccion.query.get(direccion_id)
-    if direccion:
-        db.session.delete(direccion)
-        db.session.commit()
-        return '', 204
+    if user:
+        direccion = Direccion.query.filter_by(id=direccion_id, user_id=user.id).first()
+        if direccion:
+            data = request.get_json()
+            direccion.calle = data.get('calle', direccion.calle)
+            direccion.ciudad = data.get('ciudad', direccion.ciudad)
+            direccion.pais = data.get('pais', direccion.pais)
+            db.session.commit()
+            return jsonify(direccion.to_dict()), 200
+        else:
+            return jsonify({'error': 'Dirección no encontrada o no autorizada'}), 404
     else:
-        return jsonify({'error': 'Dirección no encontrada'}), 404
+        return jsonify({'error': 'User not found'}), 404
+
+@api.route('/direcciones/<int:direccion_id>', methods=['DELETE'])
+@jwt_required()
+def delete_direccion(direccion_id):
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(email=current_user).first()
+    
+    if user:
+        direccion = Direccion.query.filter_by(id=direccion_id, user_id=user.id).first()
+        if direccion:
+            db.session.delete(direccion)
+            db.session.commit()
+            return '', 204
+        else:
+            return jsonify({'error': 'Dirección no encontrada o no autorizada'}), 404
+    else:
+        return jsonify({'error': 'User not found'}), 404
 
 # Registrando el Blueprint
 app.register_blueprint(api)

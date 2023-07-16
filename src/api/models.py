@@ -2,13 +2,17 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     role = db.Column(db.String(50), nullable=False, default='usuario')
     cart_items = db.relationship('CartItem', backref='user', cascade="all, delete-orphan")
-    direccion = db.relationship('Direccion', backref='user', cascade="all, delete-orphan")
+    direcciones = db.relationship('Direccion', backref='user', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<User {self.email}>'
