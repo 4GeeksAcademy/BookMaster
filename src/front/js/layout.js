@@ -14,11 +14,12 @@ import {ForgotPassword } from "./pages/forgotPassword.js";
 import {AdminPage} from "./pages/adminPage.js";
 import {UsersPage} from "./pages/usersPage.js";
 import { Navbar } from "./component/navbar";
+
 import { Footer } from "./component/footer";
 import { CheckoutPage } from "./pages/checkout";
 import {Cart} from "./pages/cart"
-
-
+import BookListPage from "./pages/listaLibros";
+import CartListPage from "./pages/listaCompras";
 import { DireccionesCrud} from "./pages/direccionesCrud";
  
 
@@ -46,6 +47,8 @@ const Layout = () => {
                         <Route element={<Cart />} path="/carrito" />
                         <Route element={<CheckoutPage />} path="/checkout" />
                         <Route element={<ForgotPassword />} path="/forgot-password" />
+                        <Route element={<BookListPage />} path="/lista-libros" />
+                        <Route element={<CartListPage />} path="/compras" />
                         <Route element={<h1>Not found!</h1>} />
                         <Route element={<DireccionesCrud />} path="/direcciones" />
                     </Routes>

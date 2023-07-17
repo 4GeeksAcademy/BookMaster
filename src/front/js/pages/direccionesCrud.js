@@ -10,11 +10,17 @@ export const DireccionesCrud = () => {
   const [ciudad, setCiudad] = useState("");
   const [pais, setPais] = useState("");
   const [editId, setEditId] = useState(null); // ID de la dirección en modo de edición
+  const [selectedDireccionId, setSelectedDireccionId] = useState(null); // ID de la dirección seleccionada
 
   useEffect(() => {
     // Cargar las direcciones al iniciar el componente
     actions.getDirecciones();
   }, [actions]);
+
+  useEffect(() => {
+    // Actualizar el estado local de las direcciones cada vez que cambie la lista de direcciones en el store
+    setDirecciones(store.direcciones);
+  }, [store.direcciones]);
 
   const handleAddDireccion = () => {
     actions.añadirDireccion(calle, ciudad, pais)
@@ -25,7 +31,7 @@ export const DireccionesCrud = () => {
       .catch(error => {
         console.log("Error al agregar la dirección", error);
       });
-  
+
     // Limpiar los campos de entrada
     setCalle("");
     setCiudad("");
@@ -55,15 +61,25 @@ export const DireccionesCrud = () => {
       });
   };
 
-  useEffect(() => {
-    // Actualizar el estado local de las direcciones cada vez que cambie la lista de direcciones en el store
-    setDirecciones(store.direcciones);
-  }, [store.direcciones]);
-
+  const handleToggleSeleccion = (id) => {
+    const updatedDirecciones = direcciones.map((direccion) => {
+      if (direccion.id === id) {
+        return {
+          ...direccion,
+          seleccionada: !direccion.seleccionada
+        };
+      } else {
+        return {
+          ...direccion,
+          seleccionada: false
+        };
+      }
+    });
+    setDirecciones(updatedDirecciones);
+  };
+  
   const renderDirecciones = () => {
-   
-    return direcciones.map(direccion => (
-      
+    return direcciones.map((direccion) => (
       <tr key={direccion.id}>
         <td>{direccion.direccion}</td>
         <td>{direccion.ciudad}</td>
@@ -74,6 +90,7 @@ export const DireccionesCrud = () => {
               className="btn btn-sm btn-success"
               onClick={() =>
                 handleEditDireccion(direccion.id, {
+                  user_id: direccion.user_id,
                   calle: calle,
                   ciudad: ciudad,
                   pais: pais
@@ -83,33 +100,37 @@ export const DireccionesCrud = () => {
               Guardar
             </button>
           ) : (
-            <button
-              className="btn btn-sm btn-primary"
-              onClick={() => {
-                setEditId(direccion.id);
-                setCalle(direccion.direccion);
-                setCiudad(direccion.ciudad);
-                setPais(direccion.pais);
-              }}
-            >
-              Editar
-            </button>
+            <>
+              <button
+                className={`btn btn-sm ${direccion.seleccionada ? 'btn-primary active' : 'btn-primary'}`}
+                onClick={() => handleToggleSeleccion(direccion.id)}
+              >
+                {direccion.seleccionada ? 'Deseleccionar' : 'Seleccionar'}
+              </button>
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={() => {
+                  setEditId(direccion.id);
+                  setCalle(direccion.direccion);
+                  setCiudad(direccion.ciudad);
+                  setPais(direccion.pais);
+                }}
+              >
+                Editar
+              </button>
+            </>
           )}
-          <button
-            className="btn btn-sm btn-danger"
-            onClick={() => handleDeleteDireccion(direccion.id)}
-          >
+          <button className="btn btn-sm btn-danger" onClick={() => handleDeleteDireccion(direccion.id)}>
             Eliminar
           </button>
         </td>
       </tr>
     ));
   };
-
   return (
-    <div className="direcciones-crud-container">
-      <h2 className="direcciones-crud-heading">Direcciones</h2>
-      <table className="direcciones-crud-table">
+    <div>
+      <h2>Direcciones</h2>
+      <table className="table">
         <thead>
           <tr>
             <th>Calle</th>
@@ -120,7 +141,7 @@ export const DireccionesCrud = () => {
         </thead>
         <tbody>{renderDirecciones()}</tbody>
       </table>
-      <div className="direcciones-crud-form">
+      <div>
         <h3>Agregar Dirección</h3>
         <div>
           <label>Calle:</label>
@@ -150,12 +171,12 @@ export const DireccionesCrud = () => {
           Agregar
         </button>
       </div>
-      <div className="direcciones-crud-links">
+      <div>
         <span style={{ display: 'block' }}>
-          <Link to="/">Volver</Link>
+          <Link to="/private">Volver</Link>
         </span>
         <span style={{ display: 'block' }}>
-          <Link className="btn btn-primary" to="/checkout">Checkout</Link>
+          <Link className="btn btn-primary"to="/checkout">Checkout</Link>
         </span>
       </div>
     </div>

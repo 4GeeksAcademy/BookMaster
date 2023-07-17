@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
+import '../../styles/listaUsuarios.css';
 
 export const UsersPage = () => {
   const { actions, store } = useContext(Context);
@@ -9,7 +10,7 @@ export const UsersPage = () => {
   }, []);
 
   return (
-    <div>
+    <div className="listaUsuarios">
       <h1>Usuarios Registrados</h1>
       <ul>
         {store.usuarios.map(usuario => (
@@ -22,3 +23,5 @@ export const UsersPage = () => {
     </div>
   );
 };
+
+export default UsersPage;

@@ -1,98 +1,61 @@
 .navbar {
-    display: flex;
-    height: 50px;
-    justify-content: space-between;
-    color:white;
-    background-color: #2E0F39 !important;
-    padding: 10px;
-    font-family: Arial, sans-serif;
-  }
-  .navbar-light .navbar-nav .nav-link {
-    color: white;
+  background-color: #2e0f39;
+  color: white;
 }
-  .navbar .navbar-brand {
-    font-size: 24px;
-    font-weight: bold;
-    text-decoration: none;
-    color: white;
-  }
-  .nav-link dropdown-toggle{
-    color:#FFFFFF
-  }
-  .navbar .nav-links {
-    display: flex;
-    align-items: center;
-  }
-  
-  .navbar .nav-links li {
-    margin-left: 20px;
-  }
-  
-  .navbar .nav-links li a {
-    text-decoration: none;
-    color: white;
-    font-size: 16px;
-    transition: color 0.3s ease;
-  }
-  
-  .navbar .nav-links li a:hover {
-    color: #FFC107;
-  }
-  
-  .navbar .cart-icon {
-    position: relative;
-  }
-  
-  .navbar .cart-icon .badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    background-color: #FFC107;
-    color: #FFFFFF;
-    border-radius: 50%;
-    font-size: 12px;
-  }
-  
-  .navbar .cart-icon .fa-shopping-cart {
-    font-size: 24px;
-    color: white;
-    transition: color 0.3s ease;
-  }
-  
-  .navbar .cart-icon:hover .fa-shopping-cart {
-    color: #FFC107;
-  }
-  
-  .navbar .favorite-icon {
-    position: relative;
-  }
-  
-  .navbar .favorite-icon .badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    background-color: #FFC107;
-    color: #FFFFFF;
-    border-radius: 50%;
-    font-size: 12px;
-  }
-  
-  .navbar .favorite-icon .fa-heart {
-    font-size: 24px;
-    color: #FFFFFF;
-    transition: color 0.3s ease;
-  }
-  
-  .navbar .favorite-icon:hover .fa-heart {
-    color: #FFC107;
-  }
+
+.nav-link {
+  color: white;
+}
+
+.dropdown-menu {
+  background-color: #2e0f39;
+  color: white;
+  border: none;
+}
+
+.dropdown-item {
+  color: white;
+}
+
+.dropdown-item:hover {
+  background-color: #42175d;
+}
+
+.form-control {
+  background-color: #42175d;
+  color: white;
+  border: none;
+}
+
+.dropdown-toggle {
+  color: white;
+  background-color: #42175d;
+  border: none;
+}
+
+.btn-primary {
+  background-color: #42175d;
+  border: none;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #5f2a87;
+}
+
+.badge.bg-primary {
+  background-color: #42175d;
+}
+
+.alert-danger {
+  background-color: #d32f2f;
+  color: white;
+  border-color: #b71c1c;
+}
+.navbar .badge.bg-primary {
+  color: black;
+}
+.card-title,
+.card-text {
+  color: black;
+}

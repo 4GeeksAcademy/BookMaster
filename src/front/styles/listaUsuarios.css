@@ -1,0 +1,27 @@
+.listaUsuarios {
+    background-color: #f0f0f0;
+    padding: 20px;
+  }
+  
+  .listaUsuarios h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .listaUsuarios ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .listaUsuarios li {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .listaUsuarios p {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
