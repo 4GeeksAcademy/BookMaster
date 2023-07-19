@@ -38,7 +38,7 @@ class Libro(db.Model):
     stock = db.Column(db.Integer, nullable=False)
     cart_items = db.relationship('CartItem', backref='libro', cascade="all, delete-orphan")
 
-    def _init_(self, titulo, autor, categoria, detalle, precio, stock, imagen):
+    def __init__(self, titulo, autor, categoria, detalle, precio, stock, imagen):
         self.imagen = imagen
         self.titulo = titulo
         self.autor = autor

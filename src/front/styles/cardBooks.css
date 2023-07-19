@@ -1,5 +1,12 @@
-.card{
-  margin:10px;
+.card {
+  margin: 10px;
+  flex: 0 0 calc(25% - 20px); /* Utiliza un 25% del ancho y resta el margen */
+  width: 350px;
+}
+
+.cardBooks {
+  background-color: #2e0f39;
+  color: white;
 }
 .cardBooks {
   background-color: #2e0f39;

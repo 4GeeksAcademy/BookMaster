@@ -300,27 +300,28 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       editLibro: async (id, libro) => {
-            try {
-              const response = await fetch(`${API_URL}/libros/${id}`, {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(libro)
-              });
-              if (response.ok) {
-                const data = await response.json();
-                const store = getStore();
-                const updatedLibros = store.libros.map(item => (item.id === id ? data : item));
-                setStore({ libros: updatedLibros });
-              } else {
-                throw new Error("Error al editar el libro");
-              }
-            } catch (error) {
-              console.log("Error al editar el libro", error);
-              throw new Error("Error al editar el libro");
-            }
-          },
+        try {
+          const response = await fetch(`${API_URL}/libros/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(libro)
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+            const store = getStore();
+            const updatedLibros = store.libros.map(item => (item.id === id ? data : item));
+            setStore({ libros: updatedLibros });
+          } else {
+            throw new Error("Error al editar el libro");
+          }
+        } catch (error) {
+          console.log("Error al editar el libro", error);
+          throw new Error("Error al editar el libro");
+        }
+      },
       deleteLibro: async id => {
         try {
           const response = await fetch(`${API_URL}/libros/${id}`, {
@@ -349,9 +350,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             body: JSON.stringify(store.car),
           });
           if (response.ok) {
-            // El carrito se envió correctamente al backend
+            
             console.log("Carrito enviado correctamente al backend");
-            // Aquí puedes realizar acciones adicionales después de enviar el carrito, si es necesario
+            
           } else {
             console.log("Error al enviar el carrito al backend");
           }

@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Context } from '../store/appContext';
 import '../../styles/librosCrud.css';
+
 export const LibroCRUD = () => {
   const [libros, setLibros] = useState([]);
   const [imagen, setImagen] = useState('');
@@ -13,11 +14,13 @@ export const LibroCRUD = () => {
   const [editando, setEditando] = useState(false);
   const [libroEditando, setLibroEditando] = useState(null);
   const { store, actions } = useContext(Context);
+
   useEffect(() => {
     actions.getLibros()
       .then(data => setLibros(data))
       .catch(error => console.log(error));
   }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const nuevoLibro = {
@@ -29,7 +32,8 @@ export const LibroCRUD = () => {
       precio,
       stock,
     };
-    if (editando) {
+
+    if (editando && libroEditando && libroEditando.id) {
       actions.editLibro(libroEditando.id, nuevoLibro)
         .then(() => {
           actions.getLibros()
@@ -37,6 +41,7 @@ export const LibroCRUD = () => {
             .catch((error) => console.log(error));
         })
         .catch((error) => console.log(error));
+      
       setImagen('');
       setTitulo('');
       setAutor('');
@@ -54,6 +59,7 @@ export const LibroCRUD = () => {
             .catch((error) => console.log(error));
         })
         .catch((error) => console.log(error));
+
       setImagen('');
       setTitulo('');
       setAutor('');
@@ -63,6 +69,7 @@ export const LibroCRUD = () => {
       setStock('');
     }
   };
+
   const handleEdit = (libro) => {
     setImagen(libro.imagen || '');
     setTitulo(libro.titulo || '');
@@ -72,9 +79,10 @@ export const LibroCRUD = () => {
     setPrecio(libro.precio || '');
     setStock(libro.stock || '');
     setEditando(true);
-    setLibroEditando(libro.id); // Pasa el ID del libro en lugar del objeto completo
+    setLibroEditando(libro); 
     console.log('ID del libro:', libro.id);
   };
+
   const handleDelete = (id) => {
     actions.deleteLibro(id)
       .then(() => {
@@ -84,24 +92,16 @@ export const LibroCRUD = () => {
       })
       .catch((error) => console.log(error));
   };
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const imageDataURL = reader.result;
-        setImagen(imageDataURL);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+
+  
+
   return (
     <div className="libro-crud-container">
       <h1 className="libro-crud-heading">Agregar Libro</h1>
       <form className="libro-crud-form" onSubmit={handleSubmit}>
         <div>
           <label>Imagen:</label>
-          <input type="file" onChange={handleFileChange} />
+          <input type="file"  />
         </div>
         <div>
           <label>Título:</label>
@@ -152,4 +152,5 @@ export const LibroCRUD = () => {
     </div>
   );
 };
+
 export default LibroCRUD;

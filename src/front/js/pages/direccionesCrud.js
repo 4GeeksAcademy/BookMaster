@@ -44,6 +44,11 @@ export const DireccionesCrud = () => {
         // Actualizar las direcciones después de editar
         actions.getDirecciones();
         setEditId(null); // Salir del modo de edición
+        
+        // Limpiar los campos de entrada
+        setCalle("");
+        setCiudad("");
+        setPais("");
       })
       .catch(error => {
         console.log("Error al editar la dirección", error);
@@ -62,20 +67,13 @@ export const DireccionesCrud = () => {
   };
 
   const handleToggleSeleccion = (id) => {
-    const updatedDirecciones = direcciones.map((direccion) => {
-      if (direccion.id === id) {
-        return {
-          ...direccion,
-          seleccionada: !direccion.seleccionada
-        };
-      } else {
-        return {
-          ...direccion,
-          seleccionada: false
-        };
-      }
-    });
-    setDirecciones(updatedDirecciones);
+    if (selectedDireccionId === id) {
+      // Si se hace clic en la dirección seleccionada, se deselecciona
+      setSelectedDireccionId(null);
+    } else {
+      // Si se hace clic en una dirección no seleccionada, se selecciona y se deseleccionan las demás
+      setSelectedDireccionId(id);
+    }
   };
   
   const renderDirecciones = () => {
@@ -101,12 +99,12 @@ export const DireccionesCrud = () => {
             </button>
           ) : (
             <>
-              <button
-                className={`btn btn-sm ${direccion.seleccionada ? 'btn-primary active' : 'btn-primary'}`}
-                onClick={() => handleToggleSeleccion(direccion.id)}
-              >
-                {direccion.seleccionada ? 'Deseleccionar' : 'Seleccionar'}
-              </button>
+               <button
+              className={`btn btn-sm ${selectedDireccionId === direccion.id ? 'btn-primary active' : 'btn-primary'}`}
+              onClick={() => handleToggleSeleccion(direccion.id)}
+            >
+              {selectedDireccionId === direccion.id ? 'Deseleccionar' : 'Seleccionar'}
+            </button>
               <button
                 className="btn btn-sm btn-primary"
                 onClick={() => {

@@ -3,16 +3,18 @@ import { useNavigate } from "react-router-dom";
 import CardsBooks from "../component/cardsBooks";
 import { Context } from "../store/appContext";
 import "../../styles/private.css";
+
 export const Private = () => {
-  const { store,actions } = useContext(Context);
+  const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const [authState, setAuthState] = useState({
     user: null,
     userAuth: false,
     loading: true
   });
-    const checkUser = async (token) => {
-        const checkApiUrl = process.env.BACKEND_URL + "api/private";
+
+  const checkUser = async (token) => {
+    const checkApiUrl = process.env.BACKEND_URL + "api/private";
     const requestAuth = {
       method: "GET",
       headers: {
@@ -36,6 +38,7 @@ export const Private = () => {
     }
     return auth;
   };
+
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     const userAuth = async () => {
@@ -53,27 +56,29 @@ export const Private = () => {
     };
     userAuth();
   }, []);
-  console.log(authState);
+
   if (!authState.userAuth && authState.loading) {
     return <h1>... loading</h1>;
   }
+
   if (!authState.userAuth && !authState.loading) {
     window.alert("Login again");
     navigate("/login");
-    return null; // Agregamos un return null para evitar errores de renderizado
+    return null;
   }
+
   const handleLogout = () => {
-    actions.logout(); // Llama a la función de logout del contexto
-    navigate("/login"); // Redirige al usuario a la página de login
+    actions.logout();
+    navigate("/login");
   };
+
   return (
     <div className="container">
-       <button className="btn btn-danger btn-lg" onClick={handleLogout}>
+      <button className="btn btn-danger btn-lg" onClick={handleLogout}>
         Cerrar Sesión
       </button>
-      <div className="text-start mt-5">
-       
-        <div className="d-flex text-center mt-5 tarjetasPersonaje">
+      <div className="text-center mt-5">
+        <div className="tarjetasPersonaje">
           {store.libros.map((libro, index) => (
             <CardsBooks
               key={libro.id}
@@ -87,8 +92,9 @@ export const Private = () => {
             />
           ))}
         </div>
-        
       </div>
     </div>
   );
 };
+
+export default Private;

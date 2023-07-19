@@ -6,18 +6,18 @@ const CartListPage = () => {
   const { store, actions } = useContext(Context);
 
   useEffect(() => {
-    actions.getCarrito();
+    actions.getDirecciones(); // Obtener las direcciones del carrito
   }, [actions]);
 
   return (
     <div className="listaCompras">
-      <h1>Carrito de Compras</h1>
-      {store.car.map((item) => (
-        <div key={item.id} className="cart-item">
-          <h3>{item.libro.titulo}</h3>
-          <p>Cantidad: {item.quantity}</p>
-          <p>Precio: ${item.libro.precio}</p>
-          <p>User ID: {item.user.id}</p>
+      <h1>Lista de Direcciones</h1>
+      {store.direcciones.map((direccion) => (
+        <div key={direccion.id} className="address-item">
+          <h3>{direccion.nombre}</h3>
+          <p>Dirección: {direccion.direccion}</p>
+          <p>Ciudad: {direccion.ciudad}</p>
+          <p>País: {direccion.pais}</p>
         </div>
       ))}
     </div>
